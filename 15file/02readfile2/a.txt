@@ -1,0 +1,486 @@
+李文周的博客
+Go语言免费教程，Go语言学习QQ群:645090316（满）2群:672929535，欢迎关注我的微信公众号：李文周
+
+首页 归档 关于
+Go语言文件操作
+2017年6月21日 | Golang 本文总阅读量20787次
+本文主要介绍了Go语言中文件读写的相关操作。
+
+文件是什么？
+
+计算机中的文件是存储在外部介质（通常是磁盘）上的数据集合，文件分为文本文件和二进制文件。
+
+打开和关闭文件
+os.Open()函数能够打开一个文件，返回一个*File和一个err。对得到的文件实例调用close()方法能够关闭文件。
+
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	// 只读方式打开当前目录下的main.go文件
+	file, err := os.Open("./main.go")
+	if err != nil {
+		fmt.Println("open file failed!, err:", err)
+		return
+	}
+	// 关闭文件
+	file.Close()
+}
+为了防止文件忘记关闭，我们通常使用defer注册文件关闭语句。
+
+读取文件
+file.Read()
+基本使用
+Read方法定义如下：
+
+func (f *File) Read(b []byte) (n int, err error)
+它接收一个字节切片，返回读取的字节数和可能的具体错误，读到文件末尾时会返回0和io.EOF。 举个例子：
+
+func main() {
+	// 只读方式打开当前目录下的main.go文件
+	file, err := os.Open("./main.go")
+	if err != nil {
+		fmt.Println("open file failed!, err:", err)
+		return
+	}
+	defer file.Close()
+	// 使用Read方法读取数据
+	var tmp = make([]byte, 128)
+	n, err := file.Read(tmp)
+	if err == io.EOF {
+		fmt.Println("文件读完了")
+		return
+	}
+	if err != nil {
+		fmt.Println("read file failed, err:", err)
+		return
+	}
+	fmt.Printf("读取了%d字节数据\n", n)
+	fmt.Println(string(tmp[:n]))
+}
+循环读取
+使用for循环读取文件中的所有数据。
+
+func main() {
+	// 只读方式打开当前目录下的main.go文件
+	file, err := os.Open("./main.go")
+	if err != nil {
+		fmt.Println("open file failed!, err:", err)
+		return
+	}
+	defer file.Close()
+	// 循环读取文件
+	var content []byte
+	var tmp = make([]byte, 128)
+	for {
+		n, err := file.Read(tmp)
+		if err == io.EOF {
+			fmt.Println("文件读完了")
+			break
+		}
+		if err != nil {
+			fmt.Println("read file failed, err:", err)
+			return
+		}
+		content = append(content, tmp[:n]...)
+	}
+	fmt.Println(string(content))
+}
+bufio读取文件
+bufio是在file的基础上封装了一层API，支持更多的功能。
+
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"io"
+	"os"
+)
+
+// bufio按行读取示例
+func main() {
+	file, err := os.Open("./xx.txt")
+	if err != nil {
+		fmt.Println("open file failed, err:", err)
+		return
+	}
+	defer file.Close()
+	reader := bufio.NewReader(file)
+	for {
+		line, err := reader.ReadString('\n') //注意是字符
+		if err == io.EOF {
+			if len(line) != 0 {
+				fmt.Println(line)
+			}
+			fmt.Println("文件读完了")
+			break
+		}
+		if err != nil {
+			fmt.Println("read file failed, err:", err)
+			return
+		}
+		fmt.Print(line)
+	}
+}
+ioutil读取整个文件
+io/ioutil包的ReadFile方法能够读取完整的文件，只需要将文件名作为参数传入。
+
+package main
+
+import (
+	"fmt"
+	"io/ioutil"
+)
+
+// ioutil.ReadFile读取整个文件
+func main() {
+	content, err := ioutil.ReadFile("./main.go")
+	if err != nil {
+		fmt.Println("read file failed, err:", err)
+		return
+	}
+	fmt.Println(string(content))
+}
+文件写入操作
+os.OpenFile()函数能够以指定模式打开文件，从而实现文件写入相关功能。
+
+func OpenFile(name string, flag int, perm FileMode) (*File, error) {
+	...
+}
+其中：
+
+name：要打开的文件名 flag：打开文件的模式。 模式有以下几种：
+
+模式	含义
+os.O_WRONLY	只写
+os.O_CREATE	创建文件
+os.O_RDONLY	只读
+os.O_RDWR	读写
+os.O_TRUNC	清空
+os.O_APPEND	追加
+perm：文件权限，一个八进制数。r（读）04，w（写）02，x（执行）01。
+
+Write和WriteString
+func main() {
+	file, err := os.OpenFile("xx.txt", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
+	if err != nil {
+		fmt.Println("open file failed, err:", err)
+		return
+	}
+	defer file.Close()
+	str := "hello 沙河"
+	file.Write([]byte(str))       //写入字节切片数据
+	file.WriteString("hello 小王子") //直接写入字符串数据
+}
+bufio.NewWriter
+func main() {
+	file, err := os.OpenFile("xx.txt", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
+	if err != nil {
+		fmt.Println("open file failed, err:", err)
+		return
+	}
+	defer file.Close()
+	writer := bufio.NewWriter(file)
+	for i := 0; i < 10; i++ {
+		writer.WriteString("hello沙河\n") //将数据先写入缓存
+	}
+	writer.Flush() //将缓存中的内容写入文件
+}
+ioutil.WriteFile
+func main() {
+	str := "hello 沙河"
+	err := ioutil.WriteFile("./xx.txt", []byte(str), 0666)
+	if err != nil {
+		fmt.Println("write file failed, err:", err)
+		return
+	}
+}
+练习
+copyFile
+借助io.Copy()实现一个拷贝文件函数。
+
+// CopyFile 拷贝文件函数
+func CopyFile(dstName, srcName string) (written int64, err error) {
+	// 以读方式打开源文件
+	src, err := os.Open(srcName)
+	if err != nil {
+		fmt.Printf("open %s failed, err:%v.\n", srcName, err)
+		return
+	}
+	defer src.Close()
+	// 以写|创建的方式打开目标文件
+	dst, err := os.OpenFile(dstName, os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		fmt.Printf("open %s failed, err:%v.\n", dstName, err)
+		return
+	}
+	defer dst.Close()
+	return io.Copy(dst, src) //调用io.Copy()拷贝内容
+}
+func main() {
+	_, err := CopyFile("dst.txt", "src.txt")
+	if err != nil {
+		fmt.Println("copy file failed, err:", err)
+		return
+	}
+	fmt.Println("copy done!")
+}
+实现一个cat命令
+使用文件操作相关知识，模拟实现linux平台cat命令的功能。
+
+package main
+
+import (
+	"bufio"
+	"flag"
+	"fmt"
+	"io"
+	"os"
+)
+
+// cat命令实现
+func cat(r *bufio.Reader) {
+	for {
+		buf, err := r.ReadBytes('\n') //注意是字符
+		if err == io.EOF {
+			// 退出之前将已读到的内容输出
+			fmt.Fprintf(os.Stdout, "%s", buf)
+			break
+		}
+		fmt.Fprintf(os.Stdout, "%s", buf)
+	}
+}
+
+func main() {
+	flag.Parse() // 解析命令行参数
+	if flag.NArg() == 0 {
+		// 如果没有参数默认从标准输入读取内容
+		cat(bufio.NewReader(os.Stdin))
+	}
+	// 依次读取每个指定文件的内容并打印到终端
+	for i := 0; i < flag.NArg(); i++ {
+		f, err := os.Open(flag.Arg(i))
+		if err != nil {
+			fmt.Fprintf(os.Stdout, "reading from %s failed, err:%v\n", flag.Arg(i), err)
+			continue
+		}
+		cat(bufio.NewReader(f))
+	}
+}
+扫码关注微信公众号
+12 条评论未登录用户
+说点什么
+支持 Markdown 语法预览使用 GitHub 登录
+@adeljck
+adeljck发表于大约 2 年前
+package main
+
+import (
+"fmt"
+"io/ioutil"
+"os"
+)
+
+func readfile(filename string) {
+content, err := ioutil.ReadFile(filename)
+if err != nil {
+fmt.Println(err)
+} else {
+fmt.Println(string(content))
+}
+}
+func getFilename() (filename string) {
+args := os.Args
+if len(args) > 1 {
+filename = args[1]
+} else {
+fmt.Println("no input file")
+}
+return filename
+}
+func main() {
+filename := getFilename()
+readfile(filename)
+}
+
+@zeusYi
+zeusYi发表于超过 1 年前
+bufio读取文件 代码中 “defer fileObj.Close()” 的位置应该从第17行 放到第13行吧，因为如果 line 13-- line16 中间的代码如果err!=nil，会直接return，并不会执行line 17的 defer fileObj.Close()
+
+@Q1mi
+Q1mi发表于超过 1 年前
+@zeusYi
+bufio读取文件 代码中 “defer fileObj.Close()” 的位置应该从第17行 放到第13行吧，因为如果 line 13-- line16 中间的代码如果err!=nil，会直接return，并不会执行line 17的 defer fileObj.Close()
+
+不是的，一定要先判断错误。通常只有当err!=nil的时候，返回的file才是有效的，就像你不能对一个nil调用Close方法。
+
+@zeusYi
+zeusYi发表于超过 1 年前
+@Q1mi
+
+@zeusYi
+bufio读取文件 代码中 “defer fileObj.Close()” 的位置应该从第17行 放到第13行吧，因为如果 line 13-- line16 中间的代码如果err!=nil，会直接return，并不会执行line 17的 defer fileObj.Close()
+
+不是的，一定要先判断错误。通常只有当err!=nil的时候，返回的file才是有效的，就像你不能对一个nil调用Close方法。
+
+就是说 file, err := os.Open("./xx.txt") 这个地方如果err!=nil,只有一种err ，就是文件不存在，这个时候也就没必要再对不存在的文件进行 file.Close() 了，对吧老师？
+
+@baduiy
+baduiy发表于超过 1 年前
+请问，循环读取文件和上一个读法有什么区别，谢谢解答！
+
+@Q1mi
+Q1mi发表于超过 1 年前
+@baduiy
+请问，循环读取文件和上一个读法有什么区别，谢谢解答！
+
+循环读取文件是读多次，它上一个是读一次呀。
+
+@glassy-sky-lisong
+glassy-sky-lisong发表于大约 1 年前
+package fileoperation
+
+import (
+"fmt"
+"io"
+"os"
+)
+
+func GetFile(path string) *os.File {
+file, err := os.Open(path)
+if err != nil {
+fmt.Println("can not get this file,err:", err)
+}
+return file
+}
+
+func ReadFile(file *os.File, cap int, speed int) (content []byte) {
+if file != nil {
+content = make([]byte, cap)
+for {
+temp := make([]byte, speed)
+c, err := file.Read(temp)
+if err == io.EOF {
+fmt.Println("已经读完")
+break
+}
+if err != nil {
+fmt.Println("read is fail err:", err)
+}
+content = append(content, temp[:c]...)
+}
+defer file.Close()
+return content
+}
+return []byte{}
+}
+
+func Decode(source []byte) string {
+return string(source)
+}
+
+func Encode(source string) (res []byte) {
+res = []byte(source)
+return res
+}
+
+@latteStudio
+latteStudio发表于9 个月前
+cat命令实现这段，在读取的文件最后一行不是空行的情况下，最后一行有内容的行，会无法读取
+文本内容：
+shuai qi
+asdfasdf
+
+sdf
+sadf
+
+sdf
+
+测试结果：
+latteplus@LAPTOP-00EFC09V MINGW64 /d/myCode/Go/src/learngo/basic_grammar/cat (master)
+$ ./cat.exe /d/myCode/Go/src/learngo/basic_grammar/13file/3.txt
+shuai qi
+asdfasdf
+
+sdf
+sadf
+
+@Q1mi
+Q1mi发表于9 个月前
+@latteplus
+cat命令实现这段，在读取的文件最后一行不是空行的情况下，最后一行有内容的行，会无法读取
+文本内容：
+shuai qi
+asdfasdf
+
+sdf
+sadf
+
+sdf
+
+测试结果：
+latteplus@LAPTOP-00EFC09V MINGW64 /d/myCode/Go/src/learngo/basic_grammar/cat (master)
+$ ./cat.exe /d/myCode/Go/src/learngo/basic_grammar/13file/3.txt
+shuai qi
+asdfasdf
+
+sdf
+sadf
+
+感谢反馈，现已修正。
+
+@127161782
+127161782发表于7 个月前
+bufio和ioutils在mac上不好使呀？
+
+加载更多
+See Also
+Go语言基础之time包
+Go语言基础之函数
+Go语言基础之map
+Go语言基础之指针
+二进制协议gob和msgpack介绍
+Golang
+搜索一下
+
+我亲自录制的视频课程
+
+微信扫码支持一下
+
+最近文章
+【置顶】Go语言学习之路/Go语言教程
+Go单测从零到溜系列5—goconvey的使用
+Go单测从零到溜系列4—使用monkey打桩
+Go单测从零到溜系列3—mock接口测试
+Go单测从零到溜系列2—MySQL和Redis测试
+Go单测从零到溜系列1—网络测试
+Go单测从零到溜系列0—单元测试基础
+Go结构体的内存布局
+[译]关于切片操作的技巧
+RabbitMQ Go语言客户端教程6——RPC
+分类
+Development(14)
+Django(3)
+Front-end(1)
+Golang(89)
+JavaScript(1)
+Python(13)
+标签
+Development Django Golang Python about front-end
+友情链接
+极客兔兔-有趣的技术实践
+draveness-Go语言设计与实现
+Q1mi-Python全栈之路
+赵凡的博客
+R_e-博客园
+罗迪's Blog
+微信公众号
+
+其它
+文章 RSS
+© 2021 李文周的博客 By 李文周.本站博客未经授权禁止转载. Powered by Hugo. Theme based on maupassant.京ICP备15037996号-1.

@@ -1,6 +1,9 @@
 package main
 
 import (
+	"bytes"
+	"encoding/binary"
+	"fmt"
 	"log"
 	"net"
 )
@@ -13,8 +16,27 @@ import (
  */
 
 // encode 将消息编码
-func Encode(){
-	
+func Encode(msg string) ([]byte,error){
+
+	// 1.将消息长度作为消息头(4字节)
+	length := int32(len(msg))
+
+	// 2.创建一个字节buffer
+	pkg := new(bytes.Buffer)
+
+	// 3.消息头写入buffer
+	err :=binary.Write(pkg,binary.LittleEndian,length)
+	if err!=nil {
+		log.Println("消息头写入异常",err)
+	}
+
+	// 4.消息体写入buffer
+	err = binary.Write(pkg,binary.LittleEndian,[]byte(msg))
+	if err!=nil{
+		log.Println("消息体写入异常",err)
+	}
+
+	return pkg.Bytes(),err
 }
 
 
@@ -25,7 +47,16 @@ func main() {
 	}
 	defer conn.Close()
 
-	for i := 1; i <= 20; i++ {
-		conn.Write([]byte("Hello,How ary your today?"))
+	// for i := 1; i <= 20; i++ {
+	// 	conn.Write([]byte("Hello,How are you today?"))
+	// }
+
+	for i := 0; i < 20; i++ {
+		msg := `Hello,Hello.How are you?`
+		data,err := Encode(msg)
+		if err!=nil{
+			fmt.Println("封包失败:",err)
+		}
+		conn.Write(data)
 	}
 }

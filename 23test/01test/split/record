@@ -1,0 +1,4 @@
+mode: set
+gostudy/23test/01test/split/split.go:5.40,10.13 3 1
+gostudy/23test/01test/split/split.go:16.2,17.15 2 1
+gostudy/23test/01test/split/split.go:10.13,14.3 3 1

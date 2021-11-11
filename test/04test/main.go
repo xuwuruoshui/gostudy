@@ -1,9 +1,8 @@
 package main
 
 import (
-	"bufio"
+	"encoding/json"
 	"fmt"
-	"net"
 )
 
 /**
@@ -12,37 +11,19 @@ import (
 * @content: service
  */
 
-func main() {
-	//1、监听
-	listen, err := net.Listen("tcp", ":8080")
-	if err != nil {
-		fmt.Println("监听失败:", err)
-	}
-
-	for {
-		//2、接收客户端数据
-		connect, err := listen.Accept()
-		if err != nil {
-			fmt.Println("连接失败:", err)
-		}
-		go handle(connect)
-	}
-
+ type User struct {
+	Id       int `json:"id,omitempty"`
+	Age      int `json:"age,omitempty"`
+	Username string `json:"username,omitempty"`
+	Password string `json:"password,omitempty"`
 }
 
-func handle(connect net.Conn) {
-	// 3、从连接中读取客户端消息(连接转reader)
-	reader := bufio.NewReader(connect)
-	content := make([]byte, 1024)
-	n, err := reader.Read(content)
-	if err != nil {
-		fmt.Println("读取消息失败:", err)
-	}
-	fmt.Println(string(content[:n]))
+func main() {
 
-	// 4、从连接中，返回给客户端消息
-	// n,err = connect.Write(content)
-	// if err != nil {
-	//         fmt.Println("返回失败:", err)
-	//     }
+	content,err := json.Marshal(User{Username: "zhangsna",Password: "root"})
+	if err!=nil{
+		fmt.Println(err)
+	}
+
+	fmt.Println(string(content))
 }

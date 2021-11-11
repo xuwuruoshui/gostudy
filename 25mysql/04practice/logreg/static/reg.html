@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+  <input type="text" id="username" placeholder="username"><br>
+  <input type="password" id="password" placeholder="password"><br>
+  <input type="number" id="age" placeholder="1"><br>
+  <input type="button" id="register" value="Register">
+</body>
+<script>
+  const register = document.getElementById('register')
+  const username = document.getElementById('username')
+  const password = document.getElementById('password')
+  const age = document.getElementById('age')
+
+  document.getElementById('register').onclick = () => {
+
+    axios.post('http://localhost:8080/reg', {
+      username: username.value,
+      password: password.value,
+      age: parseInt(age.value)
+    }).then(res => {
+      if (res.data.code === 200) {
+        localStorage.setItem('token', res.data.data)
+        location.href = './index.html'
+      } else if (res.data.code === 400) {
+        alert(res.data.msg)
+      }
+    }).catch(err => {
+      console.log(err)
+    })
+  }
+</script>
+
+</html>

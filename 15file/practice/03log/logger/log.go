@@ -2,6 +2,7 @@ package logger
 
 import (
 	"errors"
+	"fmt"
 	"path"
 	"runtime"
 	"strconv"
@@ -21,16 +22,12 @@ const (
 	FATAIL
 )
 
-type Logger struct {
-	Level LogLevel
-}
-
-func NewLogger(level string) Logger {
-	lv, err := parseLogLevel(level)
-	if err != nil {
-		panic(err)
-	}
-	return Logger{Level: lv}
+type Logger interface {
+	Debug(fmtMsg string, param ...interface{})
+	Info(fmtMsg string, param ...interface{})
+	Warning(fmtMsg string, param ...interface{})
+	Error(fmtMsg string, param ...interface{})
+	Fatail(fmtMsg string, param ...interface{})
 }
 
 // string转日志级别
@@ -57,7 +54,7 @@ func parseLogLevel(level string) (LogLevel, error) {
 }
 
 // 组合信息
-func combinmsg(currLv LogLevel, lvMsg string, msg string) (finalMsg string) {
+func combinmsg(currLv LogLevel, lvMsg string, fmtMsg string, param ...interface{}) (finalMsg string) {
 
 	lv, err := parseLogLevel(lvMsg)
 	if err != nil {
@@ -69,12 +66,13 @@ func combinmsg(currLv LogLevel, lvMsg string, msg string) (finalMsg string) {
 		pc, file, line, ok := runtime.Caller(3)
 		var position string
 		if ok {
-			fileName :=  runtime.FuncForPC(pc).Name()
+			fileName := runtime.FuncForPC(pc).Name()
 			basePath := path.Base(file)
 			position = " [" + fileName + ":" + basePath + ":" + strconv.Itoa(line) + "] "
 		}
 
-		finalMsg = timeMsg + level + msg + position
+		fmtMsg := fmt.Sprintf(fmtMsg, param...)
+		finalMsg = timeMsg + level + fmtMsg + position
 	}
 	return finalMsg
 }

@@ -1,32 +1,43 @@
 package logger
 
-import (
-	"fmt"
-)
+import "fmt"
 
-func (l Logger) Debug(msg string) {
-	console(l.Level,"DEBUG",msg)
+// 终端
+type ConsoleLogger struct {
+	Level LogLevel
 }
 
-func (l Logger) Info(msg string) {
-	console(l.Level,"INFO",msg)
+func NewConsoleLogger(level string) *ConsoleLogger {
+	lv, err := parseLogLevel(level)
+	if err != nil {
+		panic(err)
+	}
+	return &ConsoleLogger{Level: lv}
 }
 
-func (l Logger) Warning(msg string){
-	console(l.Level,"WARNING",msg)
-}
-
-func (l Logger) Error(msg string) {
-	console(l.Level,"ERROR",msg)
-}
-
-func (l Logger) Fatail(msg string) {
-	console(l.Level,"FATAIL",msg)
-}
-
-func console(currLevel LogLevel,lv string,msg string){
-	finalMsg := combinmsg(currLevel,lv,msg)
-	if finalMsg!=""{
+func console(currLevel LogLevel, lv string, fmtMsg string, param ...interface{}) {
+	finalMsg := combinmsg(currLevel, lv, fmtMsg, param...)
+	if finalMsg != "" {
 		fmt.Println(finalMsg)
 	}
+}
+
+func (l ConsoleLogger) Debug(fmtMsg string, param ...interface{}) {
+	console(l.Level, "DEBUG", fmtMsg, param...)
+}
+
+func (l ConsoleLogger) Info(fmtMsg string, param ...interface{}) {
+	console(l.Level, "INFO", fmtMsg, param...)
+}
+
+func (l ConsoleLogger) Warning(fmtMsg string, param ...interface{}) {
+	console(l.Level, "WARNING", fmtMsg, param...)
+}
+
+func (l ConsoleLogger) Error(fmtMsg string, param ...interface{}) {
+	console(l.Level, "ERROR", fmtMsg, param...)
+}
+
+func (l ConsoleLogger) Fatail(fmtMsg string, param ...interface{}) {
+	console(l.Level, "FATAIL", fmtMsg, param...)
 }

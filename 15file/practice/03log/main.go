@@ -28,7 +28,7 @@ func main() {
 		log.Info("这是一个Info日志,id:%d name:%s", 125, "张三")
 		log.Warning("这是一个Warning日志")
 		log.Error("这是一个Error日志")
-		time.Sleep(time.Second)
+		time.Sleep(time.Second*2)
 	}
 
 }

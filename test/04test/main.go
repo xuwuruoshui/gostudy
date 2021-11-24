@@ -1,8 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"sync"
 )
 
 /**
@@ -10,20 +10,31 @@ import (
 * @date: 2021-11-04 16:39:10
 * @content: service
  */
+ var wg sync.WaitGroup
 
- type User struct {
-	Id       int `json:"id,omitempty"`
-	Age      int `json:"age,omitempty"`
-	Username string `json:"username,omitempty"`
-	Password string `json:"password,omitempty"`
+func work(i int, ch <-chan int, ch2 chan<- int) {
+	for v := range ch {
+		ch2 <- v * 2
+		fmt.Println("第", i, "个goroutine,start执行任务", v)
+		fmt.Println("第", i, "个goroutine,end执行任务", v)
+	}
 }
 
 func main() {
 
-	content,err := json.Marshal(User{Username: "zhangsna",Password: "root"})
-	if err!=nil{
-		fmt.Println(err)
+	ch := make(chan int, 10)
+	ch2 := make(chan int, 10)
+
+	for i := 1; i <= 3; i++ {
+		go work(i, ch, ch2)
 	}
 
-	fmt.Println(string(content))
+	for i := 1; i <= 5; i++ {
+		ch <- i
+	}
+
+	for i := 0; i < 5; i++ {
+		fmt.Println(<-ch2)
+	}
+
 }

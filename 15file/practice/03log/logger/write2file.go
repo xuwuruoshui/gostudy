@@ -3,9 +3,13 @@ package logger
 import (
 	"bufio"
 	"fmt"
+	"io/fs"
 	"os"
+	"sync"
 	"time"
 )
+
+var one sync.Once
 
 // 文件
 type FileLogger struct {
@@ -13,9 +17,16 @@ type FileLogger struct {
 	Name   string
 	Suffix string
 	Path   string
+	logMsg chan *FileMsg
+	Size   int64
+}
 
-	// 一个文件最大容量
-	Size int64
+type FileMsg struct {
+	Level  LogLevel
+	Name   string
+	Suffix string
+	Path   string
+	Msg    string
 }
 
 // 没有名字设置默认为""
@@ -24,7 +35,8 @@ func NewFileLogger(level string, name string, path string, size int64) *FileLogg
 	if err != nil {
 		panic(err)
 	}
-	return &FileLogger{Level: lv, Name: name, Path: path, Size: size}
+	channel := make(chan *FileMsg, 100)
+	return &FileLogger{Level: lv, Name: name, Path: path, Size: size, logMsg: channel}
 }
 
 // 判断文件格式等信息
@@ -43,7 +55,8 @@ func (f FileLogger) write(currLevel LogLevel, lv string, fmtMsg string, param ..
 	f.Suffix = ".log"
 
 	if finalMsg != "" {
-		f.Write2File(finalMsg)
+		//f.Write2File(finalMsg)
+		f.logMsg <- &FileMsg{Level: f.Level, Name: f.Name, Suffix: f.Suffix, Path: f.Path, Msg: finalMsg}
 
 		// 日志级别为error以上,单独创建一个文件
 		loglv, err := parseLogLevel(lv)
@@ -52,25 +65,49 @@ func (f FileLogger) write(currLevel LogLevel, lv string, fmtMsg string, param ..
 		}
 		if loglv >= ERROR {
 			f.Suffix = ".err"
-			f.Write2File(finalMsg)
+			f.logMsg <- &FileMsg{Level: f.Level, Name: f.Name, Suffix: f.Suffix, Path: f.Path, Msg: finalMsg}
+			//f.Write2File(finalMsg)
 		}
 	}
+
+	one.Do(func() {
+		go f.Write2File()
+	})
 }
 
 // 写入文件
-func (f FileLogger) Write2File(msg string) {
-	path := f.Path
-	name := f.Name + f.Suffix
-	file, err := os.OpenFile(path+name, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0664)
-	if err != nil {
-		fmt.Println("日志文件创建错误:", err)
-	}
+func (f FileLogger) Write2File() {
+	for {
 
-	fileInfo, err := file.Stat()
-	if err != nil {
-		panic(err)
-	}
+		data := *<-f.logMsg
+		path := data.Path
+		name := data.Name + data.Suffix
+		file, err := os.OpenFile(path+name, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0664)
+		if err != nil {
+			fmt.Println("日志文件创建错误:", err)
+		}
 
+		fileInfo, err := file.Stat()
+		if err != nil {
+			panic(err)
+		}
+
+		msg := data.Msg
+		// 文件切割
+		Newfile, ok := f.fileSplit(fileInfo, msg, file, path, name)
+		if ok {
+			file = Newfile
+		}
+		writer := bufio.NewWriter(file)
+		writer.Write([]byte(msg + "\n"))
+		writer.Flush()
+		file.Close()
+
+	}
+}
+
+// 文件切割
+func (f FileLogger) fileSplit(fileInfo fs.FileInfo, msg string, file *os.File, path string, name string) (*os.File, bool) {
 	// 文件大于等于1M进行分割
 	fmt.Println(fileInfo.Size())
 
@@ -82,15 +119,13 @@ func (f FileLogger) Write2File(msg string) {
 		os.Rename(path+name, path+name+".bak"+time.Now().Format("20060102150405"))
 
 		// 3.创建新文件
-		file, err = os.OpenFile(path+name, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0664)
+		file, err := os.OpenFile(path+name, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0664)
 		if err != nil {
 			fmt.Println("日志文件创建错误:", err)
 		}
+		return file, true
 	}
-	writer := bufio.NewWriter(file)
-	writer.Write([]byte(msg + "\n"))
-	writer.Flush()
-	file.Close()
+	return nil, false
 }
 
 func (f FileLogger) Debug(fmtMsg string, param ...interface{}) {

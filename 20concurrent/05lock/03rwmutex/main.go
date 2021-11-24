@@ -16,7 +16,7 @@ var (
 	x int
 	wg sync.WaitGroup
 	rwlock sync.RWMutex
-	lock sync.RWMutex
+	lock sync.Mutex
 )
 
 func write(){
@@ -40,11 +40,14 @@ func read(){
 
 func main(){
 	start := time.Now()
+
+	// 写10次
 	for i := 0; i < 10; i++ {
 		wg.Add(1)
 		go write()
 	}
 
+	// 读1000次
 	for i := 0; i < 1000; i++ {
 		wg.Add(1)
 		go read()

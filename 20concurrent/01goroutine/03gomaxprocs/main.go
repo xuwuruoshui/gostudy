@@ -27,7 +27,7 @@ func b() {
 func main() {
 	// 配置n个OS线程同时执行Go代码, 默认为机器上的核心数
 	//runtime.GOMAXPROCS(1)
-	runtime.GOMAXPROCS(2)
+	runtime.GOMAXPROCS(3)
 	go a()
 	go b()
 	time.Sleep(time.Second)

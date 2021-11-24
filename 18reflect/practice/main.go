@@ -27,7 +27,8 @@ type RedisConfig struct {
 	Address  string `ini:"address"`
 	Port     int    `ini:"port"`
 	Password string `ini:"password"`
-	Database int `ini:"database"`
+	Database int    `ini:"database"`
+	Test     bool   `ini:"test"`
 }
 
 type Config struct {
@@ -71,7 +72,6 @@ func loadIni(conf string, data interface{}) (err error) {
 		// 3.1、去空格
 		line = strings.TrimSpace(line)
 
-		
 		// 3.2、注释
 		if strings.HasPrefix(line, "#") || strings.HasPrefix(line, ";") || line == "" {
 			continue
@@ -84,35 +84,40 @@ func loadIni(conf string, data interface{}) (err error) {
 			if currFiled != "" {
 				//3.4.1 判断配置是否符合书写规范
 				filedContent := strings.Split(line, "=")
-				if strings.HasPrefix(line, "=") || len(filedContent)!=2 {
+				if strings.HasPrefix(line, "=") || len(filedContent) != 2 {
 					err = errors.New("ini文件内容不正确")
 					return
 				}
-				
-				// redis或者mysql的struct
+
+				// redis或者mysql的struct type和value
 				var childStuct reflect.StructField
 				var childStuctValue reflect.Value
 				for i := 0; i < t.Elem().NumField(); i++ {
-					if t.Elem().Field(i).Tag.Get("ini") == currFiled{
+					if t.Elem().Field(i).Tag.Get("ini") == currFiled {
 						childStuct = t.Elem().Field(i)
 						childStuctValue = v.Elem().Field(i)
 					}
 				}
 
-				//遍历mysql或者redis的属性，判断是否与ini中配置相同
+				//遍历mysql或者redis的属性，判断是否与ini中配置相同，判断类型然后赋值
 				for i := 0; i < childStuct.Type.Elem().NumField(); i++ {
-					if childStuct.Type.Elem().Field(i).Tag.Get("ini")==filedContent[0]{
-						if childStuct.Type.Elem().Field(i).Type.Kind()==reflect.String{
+					if childStuct.Type.Elem().Field(i).Tag.Get("ini") == filedContent[0] {
+
+						switch childStuct.Type.Elem().Field(i).Type.Kind() {
+
+						case reflect.String:
 							childStuctValue.Elem().Field(i).SetString(filedContent[1])
-						}
-						if childStuct.Type.Elem().Field(i).Type.Kind()==reflect.Int{
-							value,_ := strconv.ParseInt(filedContent[1],10,64)
+						case reflect.Int:
+							value, _ := strconv.ParseInt(filedContent[1], 10, 64)
 							childStuctValue.Elem().Field(i).SetInt(value)
+						case reflect.Bool:
+							value, _ := strconv.ParseBool(filedContent[1])
+							childStuctValue.Elem().Field(i).SetBool(value)
 						}
+
 					}
 				}
 
-				
 			}
 		}
 	}

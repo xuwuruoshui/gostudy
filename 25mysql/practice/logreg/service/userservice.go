@@ -11,6 +11,10 @@ import (
 
 var db *sql.DB
 
+func init() {
+	initDB()
+}
+
 func initDB() (err error) {
 	host := "root:root@tcp(192.168.0.110:3306)/sql_test?charset=utf8mb4&parseTime=True"
 	db, err = sql.Open("mysql", host)
@@ -31,7 +35,6 @@ func initDB() (err error) {
 }
 
 func FetchOne(id int) entity.User {
-	initDB()
 
 	sqlStr := "select id,username,age from user where id = ?"
 	stmt, err := db.Prepare(sqlStr)
@@ -52,7 +55,6 @@ func FetchOne(id int) entity.User {
 }
 
 func FetchOneByUsernamePasswd(u entity.User) (vo.UserVo, bool) {
-	initDB()
 
 	sqlStr := "select id,username from user where username=? and password=?"
 	stmt, err := db.Prepare(sqlStr)
@@ -72,14 +74,13 @@ func FetchOneByUsernamePasswd(u entity.User) (vo.UserVo, bool) {
 	return uservo, true
 }
 
-func AddUser(u entity.User) (int64,bool) {
+func AddUser(u entity.User) (int64, bool) {
 	_, ok := FetchOneByUsernamePasswd(u)
 	if ok {
 		log.Println("已经存在用户名")
-		return 0,false
+		return 0, false
 	}
 
-	initDB()
 	sqlStr := "insert into user(username,age,password) values(?,?,?)"
 	stmt, err := db.Prepare(sqlStr)
 
@@ -88,13 +89,13 @@ func AddUser(u entity.User) (int64,bool) {
 	}
 
 	result, err := stmt.Exec(&u.Username, &u.Age, &u.Password)
-	if err != nil{
+	if err != nil {
 		log.Println("插入失败:", err)
-		return 0,false
+		return 0, false
 	}
 
-	id,_ := result.LastInsertId()
+	id, _ := result.LastInsertId()
 
-	return id,true
+	return id, true
 
 }

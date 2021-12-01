@@ -12,7 +12,7 @@ import (
 /**
 * @creator: xuwuruoshui
 * @date: 2021-11-29 21:22:12
-* @content: 生产者
+* @content: nsq一个消息队列。生产者
  */
 
 var producer *nsq.Producer

@@ -27,7 +27,7 @@ func main() {
 	// 构造一一个消息
 	msg := &sarama.ProducerMessage{}
 	msg.Topic = "web_log"
-	msg.Value = sarama.StringEncoder("ffffffffffff")
+	msg.Value = sarama.StringEncoder("qaqaqa")
 
 	// 连接kafka
 	client, err := sarama.NewSyncProducer([]string{"192.168.0.110:9092"}, config)

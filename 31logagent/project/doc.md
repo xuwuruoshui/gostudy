@@ -25,5 +25,12 @@ services:
       
  # 启动kafka和zookeeper(默认kafka的配置路径为/opt/bitnami/kafka,消息存储路径为/bitnami/kafka/data)
  docker-compose up -d
+```
+
+
+```shell
+# 从kafka自带的消费者中读取
+cd /opt/bitnami/kafka/data
+kafka-console-consumer.sh --bootstrap-server=192.168.0.110:9092 --topic=web_log --from-beginning
 
 ```

@@ -3,10 +3,9 @@ package main
 import (
 	"gopkg.in/ini.v1"
 	"gostudy/31logagent/project/config"
+	"gostudy/31logagent/project/etcd"
 	"gostudy/31logagent/project/kafka"
-	"gostudy/31logagent/project/taillog"
 	"log"
-	"time"
 )
 
 var (
@@ -27,27 +26,33 @@ func init() {
 	}
 	log.Println("kafka初始化成功")
 
-	// 3.读取文件中的日志
-	err = taillog.Init(cfg.TailLogConfig.Path)
+	// 3.初始化etcd
+	err = etcd.Init(cfg.EtcdConfig.Address,cfg.EtcdConfig.Timeout)
 	if err != nil {
-		log.Panicln("tail初始化错误,err:", err)
+		log.Panicln("etcd初始化错误,err:", err)
 	}
-	log.Println("sarama初始化成功")
+	log.Println("etcd初始化成功")
+	// 3.读取文件中的日志
+	//err = taillog.Init(cfg.TailLogConfig.Path)
+	//if err != nil {
+	//	log.Panicln("tail初始化错误,err:", err)
+	//}
+	//log.Println("sarama初始化成功")
 }
 
-func run() {
-	for  {
-		select {
-		case line :=<-taillog.ReadLog():
-			kafka.SendToKafka(cfg.KafkaConfig.Topic,line.Text)
-		default:
-			time.Sleep(time.Second)
-		}
-
-	}
-
-}
+//func run() {
+//	for  {
+//		select {
+//		case line :=<-taillog.ReadLog():
+//			kafka.SendToKafka(cfg.KafkaConfig.Topic,line.Text)
+//		default:
+//			time.Sleep(time.Second)
+//		}
+//
+//	}
+//
+//}
 
 func main() {
-	run()
+	//run()
 }

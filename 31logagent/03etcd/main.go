@@ -34,20 +34,22 @@ func init() {
 
 // 普通的操作，put、get
 func operater() {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
-	getRes, err := cli.Put(ctx, "x", "hello world")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	//putRes, err := cli.Put(ctx, "/logagent/conf", `[{"path":"f:/data/nginx.log","topic":"nginx_topic"},{"path":"f:/data/redis.log","topic":"redis_topic"},{"path":"f:/data/mysql.log","topic":"mysql_topic"}]`)
+	//putRes, err := cli.Put(ctx, "/logagent/conf", `[{"path":"f:/data/redis.log","topic":"redis_topic"},{"path":"f:/data/mysql.log","topic":"mysql_topic"}]`)
+	putRes, err := cli.Put(ctx, "/logagent/192.168.0.106/conf", `[{"path":"f:/data/redis.log","topic":"redis_topic"}]`)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(getRes)
+	fmt.Println(putRes)
 
-	putRes, err := cli.Get(ctx, "x")
+	getRes, err := cli.Get(ctx, "/logagent/conf")
 	cancel()
 	if err != nil {
 		panic(err)
 	}
 
-	for _, v := range putRes.Kvs {
+	for _, v := range getRes.Kvs {
 		fmt.Println(string(v.Key), string(v.Value))
 	}
 
@@ -68,5 +70,6 @@ func watch() {
 
 }
 func main() {
-		watch()
+		//watch()
+	operater()
 }

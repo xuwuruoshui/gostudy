@@ -8,12 +8,14 @@ type LogConfig struct{
 
 type KafkaConfig struct{
 	Address string `ini:"address"`
+	MaxSize int `ini:"chan_max_size"`
 	//Topic string `ini:"topic"`
 }
 
 type EtcdConfig struct{
 	Address []string `ini:"address"`
 	Timeout int `ini:"timeout"`
+	Key string `ini:"key"`
 }
 
 //type TailLogConfig struct{

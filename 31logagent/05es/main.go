@@ -26,9 +26,9 @@ func init(){
 
 func main(){
 	s1 := Person{
-		Name: "张三",
-		Age: 12,
-		Married: true,
+		Name: "aaa",
+		Age: 13,
+		Married: false,
 	}
 
 	indexRes,err := client.Index().Index("person").BodyJson(s1).Do(context.Background())

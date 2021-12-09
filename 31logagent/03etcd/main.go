@@ -37,7 +37,7 @@ func operater() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	//putRes, err := cli.Put(ctx, "/logagent/conf", `[{"path":"f:/data/nginx.log","topic":"nginx_topic"},{"path":"f:/data/redis.log","topic":"redis_topic"},{"path":"f:/data/mysql.log","topic":"mysql_topic"}]`)
 	//putRes, err := cli.Put(ctx, "/logagent/conf", `[{"path":"f:/data/redis.log","topic":"redis_topic"},{"path":"f:/data/mysql.log","topic":"mysql_topic"}]`)
-	putRes, err := cli.Put(ctx, "/logagent/192.168.0.106/conf", `[{"path":"f:/data/redis.log","topic":"redis_topic"}]`)
+	putRes, err := cli.Put(ctx, "/logagent/192.168.0.105/conf", `[{"path":"f:/data/redis.log","topic":"redis_topic"}]`)
 	if err != nil {
 		panic(err)
 	}

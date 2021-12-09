@@ -136,8 +136,10 @@ etcdctl.exe --endpoints=http://192.168.0.110:20004 get b
 etcdctl.exe --endpoints=http://192.168.0.110:20004 del b
 ```
 
+日志项目基本完成,kafka写入es并未去实现,但有个小案例06logtransfer,通过02sarama发送到kafka
 ## elasticsearch
 ```shell
+# es前置
 # 设置vm.max_map_count
 vi /etc/sysctl.conf
 vm.max_map_count=262144
@@ -153,6 +155,17 @@ vi /home/xuwuruoshui/data/elasticsearch/conf/jvm.options
 mkdir /home/xuwuruoshui/data/elasticsearch/data/data01
 mkdir /home/xuwuruoshui/data/elasticsearch/data/data02
 mkdir /home/xuwuruoshui/data/elasticsearch/data/data03
+
+# kibana前置
+mkdir -P /home/xuwuruoshui/data/elasticsearch/kibana/conf
+vi kibana.yml
+
+server.name: kibana
+server.host: "0.0.0.0"
+server.port: 5601
+elasticsearch.hosts: ["http://es01:9200","http://es02:9200","http://es03:9300"]
+monitoring.ui.container.elasticsearch.enabled: true
+server.shutdownTimeout: 5s
 
 
 # docker-compose
@@ -214,7 +227,16 @@ services:
       - /home/xuwuruoshui/data/elasticsearch/conf:/usr/share/elasticsearch/config/jvm.options.d/
     networks:
       - elastic
-
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.15.2
+    container_name: kibana
+    volumes:
+      - /home/xuwuruoshui/data/elasticsearch/kibana/conf/kibana.yml:/usr/share/kibana/config/kibana.yml
+    networks:
+      - elastic
+    ports:
+      - 5601:5601
+      
 volumes:
   data01:
     driver: local
@@ -226,4 +248,5 @@ volumes:
 networks:
   elastic:
     driver: bridge
+
 ```

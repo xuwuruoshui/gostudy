@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>单文件上传</h1>
+  <form action="http://127.0.0.1:8000/upload" method="post" enctype="multipart/form-data">
+      <input type="file" name="img">
+      <br>
+      <input type="submit" value="提交">
+  </form>
+<h1>多文件上传</h1>
+<form action="http://127.0.0.1:8000/upload" method="post" enctype="multipart/form-data">
+    多文件上传:
+    <input type="file" name="imgs" multiple>
+    <br>
+    <input type="submit" value="提交">
+</form>
+</body>
+</html>

@@ -14,6 +14,7 @@ func main(){
 		c.JSON(http.StatusOK,gin.H{"message":"hey","status":http.StatusOK})
 	})
 
+	//json
 	r.GET("/moreJson", func(c *gin.Context) {
 		var msg struct{
 			Name string `json:"user"`
@@ -28,14 +29,17 @@ func main(){
 		c.JSON(http.StatusOK,msg)
 	})
 
+	//xml
 	r.GET("/someXML", func(c *gin.Context) {
 		c.XML(http.StatusOK,gin.H{"message":"haha","status":http.StatusOK})
 	})
 
+	//yaml
 	r.GET("/someYAML", func(c *gin.Context) {
 		c.YAML(http.StatusOK,gin.H{"message":"hey","status":http.StatusOK})
 	})
 
+	//protobuf
 	r.GET("/someProtoBuf", func(c *gin.Context) {
 		reps := []int64{int64(1),int64(2)}
 		lable := "test"
@@ -54,5 +58,12 @@ func main(){
 			"title":"Main website",
 		})
 	})
+
+	// 重定向
+	r.GET("/redirect", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently,"http://www.baidu.com")
+	})
+
+
 	r.Run(":8080")
 }

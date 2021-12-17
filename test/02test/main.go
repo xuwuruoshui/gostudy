@@ -1,23 +1,26 @@
 package main
 
-import (
-	"reflect"
-)
+import "fmt"
 
-func GetValue() int {
-	return 1
+type Abc interface {
+	play(name string)
+}
+
+type Person struct {
+	name string
+}
+
+func (p *Person) play(name string)  {
+	fmt.Println(p.name)
+	p.name = name
+	fmt.Println(p.name)
 }
 
 func main() {
-	i := GetValue()
-	switch reflect.TypeOf(i).Kind() {
-	case reflect.Int:
-			println("int")
-	case reflect.String:
-		 println("string")
-	case reflect.Interface:
-		 println("interface")
-	default:
-		 println("unknown")
+	person :=Person{
+		name: "aaa",
+	}
+	var ggg Abc = &person
+	fmt.Printf("%T",ggg)
+	ggg.play("hhah")
  }
-}

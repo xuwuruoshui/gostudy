@@ -29,32 +29,32 @@ func NewPerson(params ... func(*Person))*Person{
 	return p
 }
 
-func setName(name string) func(*Person){
+func setName(name string) PersonFuc{
 	return func(p *Person) {
 		p.name = name
 	}
 }
 
-func setAge(age uint8) func(*Person){
+func setAge(age uint8) PersonFuc{
 	return func(p *Person) {
 		p.age = age
 	}
 }
 
 
-func setSex(sex uint8) func(*Person){
+func setSex(sex uint8) PersonFuc{
 	return func(p *Person) {
 		p.sex = sex
 	}
 }
 
-func setPhone(phone string) func(*Person){
+func setPhone(phone string) PersonFuc{
 	return func(p *Person) {
 		p.phone = phone
 	}
 }
 
-func setEmail(email string) func(*Person){
+func setEmail(email string) PersonFuc{
 	return func(p *Person) {
 		p.email = email
 	}

@@ -14,7 +14,7 @@ type Params struct {
 // 主函数
 func main(){
 	// 1.连接远程rpc服务
-	conn,err := rpc.DialHTTP("tcp",":8000")
+	conn,err := rpc.Dial("tcp",":8000")
 	if err != nil {
 		log.Fatalln(err)
 	}

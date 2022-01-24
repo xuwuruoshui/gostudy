@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	"net/http"
+	"net"
 	"net/rpc"
 )
 
@@ -31,13 +31,24 @@ func main(){
 	// 1.向rpc中注册服务
 	rect := new(Rect)
 	rpc.Register(rect)
+	// 自定义名字
+	//rpc.RegisterName("haha",rect)
 
-	// 2.服务处理绑定到http协议上
-	rpc.HandleHTTP()
 
 	//3.监听服务
-	err := http.ListenAndServe(":8000",nil)
+	listener ,err := net.Listen("tcp",":8000")
 	if err!=nil{
 		log.Panicln(err)
 	}
+
+	for{
+		conn,err := listener.Accept()
+		if err!=nil{
+			log.Panicln(err)
+		}
+		rpc.ServeConn(conn)
+	}
+	
+
+
 }

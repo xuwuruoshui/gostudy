@@ -14,7 +14,7 @@ type Params struct {
 
 
 func main(){
-	conn,err := jsonrpc.Dial("tcp","120.78.159.42 :8000")
+	conn,err := jsonrpc.Dial("tcp",":8000")
 	if err != nil {
 		log.Fatalln(err)
 	}

@@ -2,9 +2,10 @@
 
 ```shell
 # 1.安装
-go get github.com/golang/protobuf/proto
-go get google.golang.org/grpc
-go get github.com/golang/protobuf/protoc-gen-go
+# protoc命令
+go get -u google.golang.org/grpc
+go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.26
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.1
 # 下载 https://github.com/protocolbuffers/protobuf/releases window版本
 将proctoc.exe 放入bin目录
 
@@ -12,31 +13,31 @@ go get github.com/golang/protobuf/protoc-gen-go
 # 自定义导出包名，写法如下:
 syntax = "proto3";
 package proto;
-option go_package=./你的包名
+option go_package="./helloworld";
 
-message Sender{
-  string name =1;
+message HelloRequest{
+  string name = 1;
+  int32  age =2;
+  repeated string hobby =3;
 }
 
-message Reciver{
-  string name=1;
-  int32 age =2;
-  bool isMarried=3;
-  repeated string hobby=4;
+message Response{
+  string replay = 1;
 }
 
-service TestService{
-  rpc Search(Sender) returns(Reciver){};
+service Hello{
+  rpc Hello(HelloRequest) returns (Response);
 }
+
 
 # 3.编译
 # -I输入地址
 # --goout=输出位置
 # 最后一个参数输入文件名字
-protoc -I ./ --go_out=../ test.proto
+protoc --proto_path=. --go_out=. --go_opt=paths=source_relative helloworld.proto
 # 含rpc的编译
-protoc -I=. --go_out=plugins=grpc:../ test.proto
-
+protoc -I . helloworld.proto --go_out=plugins=grpc:.
+protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative helloworld.proto
 # 4.命名规范
 - message: 驼峰命名，其内部字段小写加下划线
 - service: 驼峰命名

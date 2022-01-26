@@ -10,7 +10,7 @@ import (
 
 func TestSession_ReadWriter(t *testing.T) {
 	addr := "127.0.0.1:8000"
-	my_data := "hello"
+	my_data := "test"
 
 	var wg sync.WaitGroup
 	wg.Add(2)

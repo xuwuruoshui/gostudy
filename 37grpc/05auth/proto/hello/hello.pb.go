@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.26.0
 // 	protoc        v3.19.1
-// source: hello.proto
+// source: test.proto
 
 package hello
 
@@ -149,12 +149,12 @@ func file_hello_proto_rawDescGZIP() []byte {
 
 var file_hello_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_hello_proto_goTypes = []interface{}{
-	(*HelloRequest)(nil),  // 0: hello.HelloRequest
-	(*HelloResponse)(nil), // 1: hello.HelloResponse
+	(*HelloRequest)(nil),  // 0: test.HelloRequest
+	(*HelloResponse)(nil), // 1: test.HelloResponse
 }
 var file_hello_proto_depIdxs = []int32{
-	0, // 0: hello.Hello.SayHello:input_type -> hello.HelloRequest
-	1, // 1: hello.Hello.SayHello:output_type -> hello.HelloResponse
+	0, // 0: test.Hello.SayHello:input_type -> test.HelloRequest
+	1, // 1: test.Hello.SayHello:output_type -> test.HelloResponse
 	1, // [1:2] is the sub-list for method output_type
 	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -238,7 +238,7 @@ func NewHelloClient(cc grpc.ClientConnInterface) HelloClient {
 
 func (c *helloClient) SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloResponse, error) {
 	out := new(HelloResponse)
-	err := c.cc.Invoke(ctx, "/hello.Hello/SayHello", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/test.Hello/SayHello", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -272,7 +272,7 @@ func _Hello_SayHello_Handler(srv interface{}, ctx context.Context, dec func(inte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hello.Hello/SayHello",
+		FullMethod: "/test.Hello/SayHello",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(HelloServer).SayHello(ctx, req.(*HelloRequest))
@@ -281,7 +281,7 @@ func _Hello_SayHello_Handler(srv interface{}, ctx context.Context, dec func(inte
 }
 
 var _Hello_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "hello.Hello",
+	ServiceName: "test.Hello",
 	HandlerType: (*HelloServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -290,5 +290,5 @@ var _Hello_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "hello.proto",
+	Metadata: "test.proto",
 }

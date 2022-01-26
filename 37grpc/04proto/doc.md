@@ -36,8 +36,10 @@ service Hello{
 # 最后一个参数输入文件名字
 protoc --proto_path=. --go_out=. --go_opt=paths=source_relative helloworld.proto
 # 含rpc的编译
-protoc -I . helloworld.proto --go_out=plugins=grpc:.
 protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative helloworld.proto
+# 仅rpc
+protoc --go-grpc_out=. --go-grpc_opt=paths=source_relative helloworld.proto
+
 # 4.命名规范
 - message: 驼峰命名，其内部字段小写加下划线
 - service: 驼峰命名

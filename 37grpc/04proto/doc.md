@@ -49,4 +49,6 @@ protoc --go-grpc_out=. --go-grpc_opt=paths=source_relative helloworld.proto
 required: 必填
 optional: 可填可不填
 repeated: 数组/切片,可以是多个值
+enum: 枚举类型，go中默认const常量
+timestamp: 时间类型,go语言使用timestampppd.New()
 ```

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"time"
 
 	"google.golang.org/grpc"
 
@@ -15,6 +16,8 @@ type Server struct {
 }
 
 func (s *Server) SayHello(ctx context.Context, request *helloworld.HelloRequest) (*helloworld.HelloReply, error) {
+
+	time.Sleep(time.Second * 5)
 	return &helloworld.HelloReply{
 		Message: fmt.Sprintf("Hello GRPC!!![%s]", request.GetName()),
 	}, nil

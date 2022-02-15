@@ -33,8 +33,11 @@ func init() {
 		//return zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
 	}
 	writerSync := func() zapcore.WriteSyncer {
+		// 控制台打印
+		//return zapcore.AddSync(os.Stderr)
+
 		//file, _ := os.Create("./04zap/test.log")
-		//引入lumberjack
+		//引入lumberjack，文件切割
 		//MaxSize：日志文件的最大大小（以MB为单位）
 		//MaxBackups：保留旧文件的最大个数
 		//MaxAges：保留旧文件的最大天数

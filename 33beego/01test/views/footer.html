@@ -1,0 +1,16 @@
+<footer>
+    <div class="author">
+        Test Official website:
+        <a href="http://{{.Website}}">{{.Website}}</a> /
+        Contact me:
+        {{if eq .IsEmail 1}}
+        <a class="email" href="mailto:{{.Email}}">{{.Email}}</a>
+        {{else}}
+        <a class="email" href="mailto:{{.Email}}">禁止访问邮箱</a>
+        {{end}}
+        <br>
+        {{range $index,$value := .Numbers}}
+        {{$index}}={{$value.Num}} of {{$.Website}}<br>
+        {{end}}
+    </div>
+</footer>

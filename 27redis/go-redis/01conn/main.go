@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 )
 
 /**
@@ -40,6 +40,6 @@ func initRDB() error{
 }
 
 
+
 func main(){
-	
 }

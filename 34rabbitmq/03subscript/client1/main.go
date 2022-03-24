@@ -6,7 +6,8 @@ import (
 )
 
 func main() {
-	subscript.ComsumerEx("test.hello","fanout","", func(s string) {
-		fmt.Println(s)
+
+	subscript.ComsumerEx("test.hello", "fanout", "", func(s string) {
+		fmt.Println("从rabbitmq中接收: ", s)
 	})
 }

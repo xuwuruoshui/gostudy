@@ -6,7 +6,8 @@ import (
 )
 
 func main() {
-	topic.ComsumerEx("test.hello.topic", "topic", "*.hello.*", func(msg string) {
+	// 获取b.*
+	topic.ComsumerEx("test.hello.deadletter", "deadletter", "b.*.*", func(msg string) {
 		fmt.Println(msg)
 	})
 }

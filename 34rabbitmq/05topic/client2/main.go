@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"rabbitmq_test/04router/router"
+	"rabbitmq_test/05topic/topic"
 )
 
 func main() {
-	router.ComsumerEx("test.hello.router", "direct", "two", func(msg string) {
+	// 获取*.hello.*
+	topic.ComsumerEx("test.hello.deadletter", "deadletter", "*.hello.*", func(msg string) {
 		fmt.Println(msg)
 	})
 }

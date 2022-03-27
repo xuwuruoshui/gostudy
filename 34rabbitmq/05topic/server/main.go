@@ -1,7 +1,7 @@
 package main
 
 import (
-	"rabbitmq_test/04router/router"
+	"rabbitmq_test/05topic/topic"
 	"strconv"
 	"time"
 )
@@ -10,10 +10,12 @@ func main() {
 
 	count := 0
 	for {
-		if count&1 == 1 {
-			router.PublicEx("test.hello.router", "direct", "one", "test hello: "+strconv.Itoa(count))
+		if count%3 == 0 {
+			topic.PublicEx("test.hello.deadletter", "deadletter", "a.hello.name", "a.hello.name deadletter: "+strconv.Itoa(count))
+		} else if count%3 == 1 {
+			topic.PublicEx("test.hello.deadletter", "deadletter", "b.hello.uid", "b.hello.uid: "+strconv.Itoa(count))
 		} else {
-			router.PublicEx("test.hello.router", "direct", "two", "test hello: "+strconv.Itoa(count))
+			topic.PublicEx("test.hello.deadletter", "deadletter", "b.haha.uid", "b.haha.uid: "+strconv.Itoa(count))
 		}
 		count++
 		time.Sleep(time.Second)

@@ -2,9 +2,10 @@ package entity
 
 import "time"
 
-type Role struct {
+type PermRole struct {
 	Id       int       `json:"id"`
-	Name     string    `json:"name"`
+	PermId   int       `json:"permId"`
+	RoleId   int       `json:"roleId"`
 	CreateAt time.Time `json:"createAt"`
 	UpdateAt time.Time `json:"updateAt"`
 	DeleteAt time.Time

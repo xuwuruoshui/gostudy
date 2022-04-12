@@ -7,9 +7,18 @@ import (
 )
 
 func FindRoleByUserId(id int) []entity.Role {
-	sqlStr := "select id,userId,permId from role where userId=?"
+	sqlStr := `
+	SELECT
+	r.id,
+	r.name
+FROM
+	user u
+	LEFT JOIN user_role ur ON ur.user_id = u.id
+	LEFT JOIN role r ON ur.role_id = r.id
+	where u.id=?
+	GROUP BY r.id;
+`
 
-	fmt.Println(config.DB)
 	var r []entity.Role
 	err := config.DB.Select(&r, sqlStr, id)
 	if err != nil {

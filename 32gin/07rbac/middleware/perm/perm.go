@@ -17,25 +17,34 @@ func Perm() gin.HandlerFunc {
 			return
 		}
 
-		u, exists := c.Get("username")
-		if !exists {
+		username := c.GetString("username")
+		if username == "" {
 			c.JSON(http.StatusUnauthorized, result.NO_PERMISSION)
 			c.Abort()
 			return
 		}
-		username := u.(string)
+
 		// 查user
 		user := user.FindUserbyName(username)
-		// 查role
-		role := role.FindRoleByUserId(user.ID)
-		// 查perm
-		for _, v := range role {
-			permission := perm.FindPermById(v.PermId)
+
+		// TODO 后续role和perm可以保存到redis里面
+		// 查role列表
+		roles := role.FindRoleByUserId(user.ID)
+		roleIds := make([]int, len(roles))
+		for i, v := range roles {
+			roleIds[i] = v.Id
+		}
+
+		// 查perm列表
+		permissions := perm.FindPermByRoles(roleIds)
+
+		for _, permission := range permissions {
 			if permission.Path == c.Request.RequestURI {
 				c.Next()
 				return
 			}
 		}
+
 		c.JSON(http.StatusUnauthorized, result.NO_PERMISSION)
 		c.Abort()
 		return

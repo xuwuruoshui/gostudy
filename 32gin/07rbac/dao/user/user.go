@@ -49,7 +49,7 @@ func Insert(user *entity.User) *result.Result {
 		return result.USER_IS_EXISTED
 	}
 
-	sqlStr := "insert into user(username, password,createAt,updateAt) values (?,?,?,?)"
+	sqlStr := "insert into user(username, password,create_at,update_at) values (?,?,?,?)"
 	ret, err := config.DB.Exec(sqlStr, user.Username, user.Password, time.Now(), time.Now())
 	if err != nil {
 		fmt.Printf("insert failed, err:%v\n", err)

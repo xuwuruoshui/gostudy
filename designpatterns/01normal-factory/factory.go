@@ -2,6 +2,9 @@ package normal_factory
 
 import "fmt"
 
+// 简单工程模式
+// 使用if或者switch根据不同条件生产对应的对象
+
 type PhoneFactory interface {
 	Call()
 }

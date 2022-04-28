@@ -31,10 +31,10 @@ func init() {
 	// 设置支付宝请求 公共参数
 	//    注意：具体设置哪些参数，根据不同的方法而不同，此处列举出所有设置参数
 	client.SetLocation(alipay.LocationShanghai). // 设置时区，不设置或出错均为默认服务器时间
-		SetCharset(alipay.UTF8). // 设置字符编码，不设置默认 utf-8
-		SetSignType(alipay.RSA2). // 设置签名类型，不设置默认 RSA2
-		SetReturnUrl("http://www.xuwuruoshui.club:8080/callback"). // 设置返回URL
-		SetNotifyUrl("http://www.xuwuruoshui.club:8080/callback") // 设置异步通知URL
+							SetCharset(alipay.UTF8).                                   // 设置字符编码，不设置默认 utf-8
+							SetSignType(alipay.RSA2).                                  // 设置签名类型，不设置默认 RSA2
+							SetReturnUrl("http://www.xuwuruoshui.club:8080/callback"). // 设置返回URL
+							SetNotifyUrl("http://www.xuwuruoshui.club:8080/callback")  // 设置异步通知URL
 	//SetAppAuthToken()                   // 设置第三方应用授权
 
 	// 自动同步验签（只支持证书模式）

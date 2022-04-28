@@ -3,16 +3,17 @@ package facade
 import "fmt"
 
 // 外观模式
+// 道由阴阳
 
-type Ying interface {
+type Yin interface {
 	Reduce()
 }
 
-type YingImpl struct {
+type YinImpl struct {
 	
 }
 
-func (y *YingImpl)Reduce(){
+func (y *YinImpl)Reduce(){
 	fmt.Println("阴")
 }
 
@@ -31,18 +32,18 @@ func (y *YangImpl)Increase(){
 }
 
 type Dao struct {
-	ying Ying
+	yin Yin
 	yang Yang
 }
 
 func NewDao()  *Dao{
 	return &Dao{
-		&YingImpl{},
+		&YinImpl{},
 		&YangImpl{},
 	}
 }
 
 func (c *Dao)Run(){
-	c.ying.Reduce()
+	c.yin.Reduce()
 	c.yang.Increase()
 }

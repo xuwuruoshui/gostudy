@@ -3,7 +3,7 @@ package facade
 import "fmt"
 
 // 外观模式
-// 道由阴阳
+// 道由阴阳组成
 
 type Yin interface {
 	Reduce()

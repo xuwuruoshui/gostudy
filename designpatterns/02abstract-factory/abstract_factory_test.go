@@ -1,7 +1,7 @@
 package abstract_factory
 
 import (
-	"abstract-factory/factory"
+	"designpatterns/02abstract-factory/factory"
 	"testing"
 )
 

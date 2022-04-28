@@ -1,8 +1,8 @@
 package factory
 
 import (
-	"abstract-factory/entity"
-	"abstract-factory/features"
+	"designpatterns/02abstract-factory/entity"
+	"designpatterns/02abstract-factory/features"
 )
 
 type HuaweiFactory struct {

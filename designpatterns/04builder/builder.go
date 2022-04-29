@@ -6,7 +6,7 @@ import "fmt"
 // 用户无需关系内部实现，只需要创建BenchiBuilder、BaomaBuilder即可
 // 用户手动实现Builder也无需关心内部的组装流程，只关注单独的每一个部件即可
 
-type Builder interface {
+type CarBuilder interface {
 	// 组装发动机
 	AssembleEngine()
 	// 组装车身
@@ -16,10 +16,10 @@ type Builder interface {
 }
 
 type Director struct {
-	builder Builder
+	builder CarBuilder
 }
 
-func NewDirector(builder Builder)*Director{
+func NewDirector(builder CarBuilder)*Director{
 	return &Director{
 		builder: builder,
 	}

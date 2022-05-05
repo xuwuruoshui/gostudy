@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
@@ -63,8 +64,8 @@ type Student struct {
 func main() {
 	defer close()
 	//InsertDocument()
-	InsertManyDocument()
-	
+	//InsertManyDocument()
+	updateDocuemnt()
 	
 }
 
@@ -81,7 +82,7 @@ func InsertDocument(){
 	fmt.Println("回显id",insertResult.InsertedID)
 }
 
-// 更新文档
+// 插入多条文档
 func InsertManyDocument(){
 	collection := Client.Database("test").Collection("student")
 	
@@ -94,4 +95,24 @@ func InsertManyDocument(){
 		log.Fatalln(err)
 	}
 	fmt.Println("回显ids",insertResult.InsertedIDs)
+}
+
+// 更新文档
+func updateDocuemnt(){
+	collection := Client.Database("test").Collection("student")
+	// 筛选
+	filter := bson.D{{"name","小兰"}}
+	update := bson.D{
+		{
+			"$inc",bson.D{
+				{"age",1},
+		}},
+	}
+
+	updateResult, err := collection.UpdateOne(context.TODO(), filter, update)
+	if err!=nil{
+		log.Fatalln(err)
+	}
+	
+	fmt.Println("更新后返回",updateResult.ModifiedCount,updateResult.MatchedCount)
 }

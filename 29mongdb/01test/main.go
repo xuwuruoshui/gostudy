@@ -65,8 +65,11 @@ func main() {
 	defer close()
 	//InsertDocument()
 	//InsertManyDocument()
-	updateDocuemnt()
-	
+	//updateDocuemnt()
+	//SearchDocument()
+	//SearchManyDocument()
+	//DeleteDocument()
+	DeleteManyDocument()
 }
 
 // 新增
@@ -115,4 +118,72 @@ func updateDocuemnt(){
 	}
 	
 	fmt.Println("更新后返回",updateResult.ModifiedCount,updateResult.MatchedCount)
+}
+
+// 查找文档
+func SearchDocument(){
+	collection := Client.Database("test").Collection("student")
+	var result Student
+	err := collection.FindOne(context.TODO(), bson.D{{"name", "小兰"}}).Decode(&result)
+	if err!=nil{
+		log.Fatalln(err)
+	}
+	fmt.Println("单个document查询:",result)
+}
+
+// 查询多个文档
+func SearchManyDocument(){
+	collection := Client.Database("test").Collection("student")
+	findOptions := options.Find()
+	findOptions.SetLimit(2)
+	
+	
+
+	cur, err := collection.Find(context.TODO(), bson.D{}, findOptions)
+	if err!=nil{
+		log.Fatalln(err)
+	}
+
+	var results []*Student
+	for cur.Next(context.TODO()){
+		var elemn Student
+		err := cur.Decode(&elemn)
+		if err!=nil{
+			log.Fatalln(err)
+		}
+		results = append(results,&elemn)
+	}
+
+	if err := cur.Err();err!=nil{
+		log.Fatalln(err)
+	}
+	
+	// 完成后关闭游标
+	cur.Close(context.TODO())
+	fmt.Println("多条数据:")
+	for _, v := range results {
+		fmt.Println(v)
+	}
+}
+
+// 删除文档
+func DeleteDocument(){
+	collection := Client.Database("test").Collection("student")
+	deleteResult, err := collection.DeleteOne(context.TODO(), bson.D{{"name", "小黄"}})
+	if err!=nil{
+		log.Fatalln(err)
+	}
+	fmt.Println("删除的数量:",deleteResult.DeletedCount)
+
+	
+}
+
+func DeleteManyDocument()  {
+	collection := Client.Database("test").Collection("student")
+	deleteResult, err := collection.DeleteMany(context.TODO(), bson.D{{}})
+	if err!=nil{
+		log.Fatalln(err)
+	}
+
+	fmt.Println("删除的数量",deleteResult.DeletedCount)
 }

@@ -93,7 +93,7 @@ func main() {
 	r.Run("127.0.0.1:8080")
 }
 
-func pay() (string, error) {
+func pay() (interface{}, error) {
 	// 初始化 BodyMap
 	bm := make(gopay.BodyMap)
 	bm.Set("subject", "条码支付").
@@ -103,7 +103,7 @@ func pay() (string, error) {
 		Set("total_amount", "100").
 		Set("timeout_express", "2m")
 
-	aliRsp, err := client.TradePagePay(context.Background(), bm)
+	aliRsp, err := client.TradePrecreate(context.Background(), bm)
 	if err != nil {
 		if bizErr, ok := alipay.IsBizError(err); ok {
 			xlog.Errorf("%+v", bizErr)

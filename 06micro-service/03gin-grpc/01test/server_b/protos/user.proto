@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = ".;pb";
+
+message UserRequest{
+  int64 id = 1;
+}
+
+message UserResponse{
+  int64 id = 1;
+  string name = 2;
+  int64 age = 3;
+}
+
+service UserService {
+    rpc SendUserInfo (UserRequest) returns (UserResponse){}
+}

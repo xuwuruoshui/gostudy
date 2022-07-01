@@ -1,4 +1,4 @@
-package server
+package main
 
 import (
 	"fmt"
@@ -6,24 +6,33 @@ import (
 	"time"
 )
 
-func main() {
-	// Connect to NATS
-	nc, _ := nats.Connect(nats.DefaultURL)
+/**
+* @creator: xuwuruoshui
+* @date: 2022-06-24 17:09:43
+* @content: 发布
+* @start: docker run  -p 4222:4222 -d nats -js
+ */
 
-	// Create JetStream Context
+func main() {
+	nc, _ := nats.Connect(nats.DefaultURL)
 	js, _ := nc.JetStream(nats.PublishAsyncMaxPending(256))
 
-	// Simple Stream Publisher
-	js.Publish("ORDERS.scratch", []byte("hello"))
+	// Create a Stream
+	js.AddStream(&nats.StreamConfig{
+		Name:     "ORDERS",
+		Subjects: []string{"ORDERS.*"},
+	})
 
 	// Simple Async Stream Publisher
-	for i := 0; i < 500; i++ {
+	for i := 0; i < 9; i++ {
 		js.PublishAsync("ORDERS.scratch", []byte("hello"))
 	}
 
 	select {
-	case <-js.PublishAsyncComplete():
+	case temp := <-js.PublishAsyncComplete():
+		fmt.Println(temp)
 	case <-time.After(5 * time.Second):
 		fmt.Println("Did not resolve in time")
 	}
+
 }

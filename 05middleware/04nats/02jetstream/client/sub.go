@@ -1,19 +1,44 @@
-package client
+package main
 
 import (
 	"fmt"
 	"github.com/nats-io/nats.go"
 )
 
+/**
+* @creator: xuwuruoshui
+* @date: 2022-06-24 17:09:43
+* @content: 订阅
+ */
+
 func main() {
 	// Connect to NATS
-	nc, _ := nats.Connect(nats.DefaultURL)
+	nc, err := nats.Connect(nats.DefaultURL)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	// Create JetStream Context
-	js, _ := nc.JetStream(nats.PublishAsyncMaxPending(256))
-
-	// Simple Async Ephemeral Consumer
-	js.Subscribe("ORDERS.*", func(m *nats.Msg) {
-		fmt.Printf("Received a JetStream message: %s\n", string(m.Data))
+	// 创建消费者
+	js, _ := nc.JetStream()
+	js.AddConsumer("ORDERS", &nats.ConsumerConfig{
+		Durable: "MONITOR",
 	})
+	sub, err := js.PullSubscribe("ORDERS.*", "MONITOR")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// 分批从stream拉取消息一次10个
+	msgs, err := sub.Fetch(10)
+	if err != nil {
+		fmt.Println(err)
+	}
+	for _, msg := range msgs {
+		err = msg.Ack()
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println(string(msg.Data))
+	}
 }

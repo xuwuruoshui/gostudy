@@ -1,0 +1,40 @@
+kind: pipeline
+type: docker
+name: build
+steps:
+- name: 1.编译文件
+  image: golang:alpine
+  pull: if-not-exists # always never
+  commands:
+    - export GOARCH=amd64
+    - export GOOS=linux
+    - export GO111MODULE=auto
+    - export GOPROXY=https://goproxy.cn
+    - go build -o main
+    - ls
+- name: 3.传输文件
+  image: appleboy/drone-scp
+  settings:
+    host: 120.78.159.42
+    username: root
+    password: 
+      from_secret: ssh_password
+    port: 22
+    target: /app/drone-test
+    #tmp目录是远程主机的
+    source: ./
+    #需要传输的文件夹，当前目录
+- name: 3.打包docker镜像
+  pull: if-not-exists
+  image: appleboy/drone-ssh
+  settings:
+    host: 120.78.159.42
+    username: root
+    password: 
+      # 从drone仓库配置中秘密空间读取密码
+      from_secret: ssh_password
+    port: 22
+    script:
+      - cd /app/drone-test
+      - chmod +x deploy.sh
+      - ./deploy.sh

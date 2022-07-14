@@ -1,0 +1,3 @@
+p, dajun, /user/test/:resource, get
+p, dajun, /user/:resource, post
+p, dajun, /user/:resource, get

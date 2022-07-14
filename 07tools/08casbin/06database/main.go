@@ -26,9 +26,24 @@ func main() {
 	a, _ := gormadapter.NewAdapter("mysql", "root:123456@tcp(127.0.0.1:3306)/")
 	e, _ := casbin.NewEnforcer("./model.conf", a)
 
-	// 数据库中设置了zhangsna为admin,lisi为student
+	e.LoadPolicy()
+
+	// 数据库中设置了zhangsan为admin,lisi为student
 	check(e, "zhangsan", "/user", "POST")
 	check(e, "zhangsan", "/user", "GET")
 	check(e, "lisi", "/user", "POST")
 	check(e, "lisi", "/user", "GET")
+
+	// 1.为角色添加访问权限
+	e.AddPolicy("student", "/user", "POST")
+	check(e, "lisi", "/user", "POST")
+
+	// 2.修改权限
+	e.UpdatePolicy([]string{"student", "/user", "POST"}, []string{"student", "/user", "PUT"})
+	check(e, "lisi", "/user", "POST")
+	check(e, "lisi", "/user", "PUT")
+
+	// 3.删除权限
+	e.RemovePolicy("student", "/user", "PUT")
+	check(e, "lisi", "/user", "PUT")
 }

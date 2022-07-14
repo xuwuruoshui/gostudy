@@ -21,26 +21,28 @@ LOCAL_NETWORK_ALLOWLIST = ip或domain
 docker run \
   --volume=/var/lib/drone:/data \
   --env=DRONE_AGENTS_ENABLED=true \
-  --env=DRONE_GOGS_SERVER=http://xxxxxxxx:10880 \
+  --env=DRONE_GOGS_SERVER=http://yourip:10880 \
   --env=DRONE_RPC_SECRET=super-duper-secret \
-  --env=DRONE_SERVER_HOST=xxxxxxxx:8080 \
+  --env=DRONE_SERVER_HOST=yourip:8080 \
+  --env=DRONE_GIT_ALWAYS_AUTH=true \
   --env=DRONE_SERVER_PROTO=http \
-  --env=DRONE_USER_CREATE=username:gogs,machine:false,admin:true,token:55f24eb3d61ef6ac5e83d550178638dc \
+  --env=DRONE_USER_CREATE=username:{your admin name},admin:true \
   --publish=8080:80 \
   --publish=8443:443 \
   --restart=always \
   --detach=true \
   --name=drone \
   drone/drone
+
 ```
 
 # 安装drone runner
 ```sh
-docker run --detach \
+  docker run --detach \
   --volume=/var/run/docker.sock:/var/run/docker.sock \
   --env=DRONE_TMATE_ENABLED=true \
   --env=DRONE_RPC_PROTO=http \
-  --env=DRONE_RPC_HOST=xxxxxxxx:8080 \
+  --env=DRONE_RPC_HOST=yourip:8080 \
   --env=DRONE_RPC_SECRET=super-duper-secret \
   --env=DRONE_RUNNER_CAPACITY=2 \
   --env=DRONE_RUNNER_NAME=my-first-runner \

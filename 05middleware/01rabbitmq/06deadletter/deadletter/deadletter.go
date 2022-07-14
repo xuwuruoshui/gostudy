@@ -2,6 +2,7 @@ package deadletter
 
 import (
 	"fmt"
+
 	"github.com/streadway/amqp"
 )
 
@@ -14,7 +15,7 @@ import (
 var Conn *amqp.Connection
 
 func init() {
-	conn, err := amqp.Dial("amqp://root:root@192.168.0.110:5672/")
+	conn, err := amqp.Dial("amqp://guest:guest@127.0.0.1:5672/")
 	if err != nil {
 		fmt.Println("连接失败: ", err)
 		return
@@ -125,7 +126,7 @@ func ComsumerDlx(exchangeA, queueAName, exchangeB, queueBName string, ttl int, c
 		fmt.Println(err)
 		return
 	}
-	
+
 	fmt.Println("Wating for message.....")
 	for {
 		select {

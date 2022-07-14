@@ -53,4 +53,5 @@ func main() {
 
 	s3 := Subject{"zhangsan", 20}
 	check(e, s3, o, "read")
+
 }

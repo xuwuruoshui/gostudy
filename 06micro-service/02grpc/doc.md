@@ -3,17 +3,19 @@
 ```protobuf
 syntax = "proto3";
 
-// 方法
-service BookService{
-  rpc SayName(BookRequest) returns (BookRequest);
+// 与package包对应
+option go_package="./pb";
+
+package pb;
+
+service Study{
+  rpc Study(BookRequest) returns (BookRequest);
 }
 
-// 请求
 message BookRequest{
   string name=1;
 }
 
-// 响应
 message BookResponse{
   string msg=1;
 }
@@ -39,7 +41,12 @@ go get -u google.golang.org/grpc
 
 3. 生产go文件
 ```shell
-# 生成
+# 文件目录
+- proto
+  - pb
+  book.proto
+
+# proto目录下执行,生成go代码
 protoc --go_out=./pb --go_opt=paths=source_relative --go-grpc_out=./pb --go-grpc_opt=paths=source_relative book.proto
 
 # 下载依赖包

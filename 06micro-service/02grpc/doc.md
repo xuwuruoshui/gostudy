@@ -42,8 +42,10 @@ message BookResponse{
 # 下载
 https://github.com/protocolbuffers/protobuf/releases
 
-# 将文件中的protoc.exe放到go的bin目录下
-protoc.exe
+# 将文件中的protoc.exe放到go的bin目录下,include放到go的bin目录同级
+- bin
+  protoc.exe
+- include
 ```
 
 2. 安装protoc-gen-go
@@ -65,8 +67,10 @@ go get -u google.golang.org/grpc
   book.proto
 
 # proto目录下执行,生成go代码
+# 第一种
 protoc --go_out=./pb --go_opt=paths=source_relative --go-grpc_out=./pb --go-grpc_opt=paths=source_relative book.proto
-
+# 第二种
+protoc -I=.  --go_out=. --go-grpc_out=. machine.proto  
 # 下载依赖包
 go mod tidy
 ```

@@ -1,0 +1,18 @@
+syntax="proto3";
+
+option go_package="/pb";
+
+package pb;
+
+message TestRequest{
+  int64 id=1;
+}
+
+message TestResponse{
+  string name=1;
+  UserInfo userInfo=2;
+}
+
+message UserInfo{
+  string name=1;
+}

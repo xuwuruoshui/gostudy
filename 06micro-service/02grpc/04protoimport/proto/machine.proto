@@ -1,0 +1,11 @@
+syntax="proto3";
+import "google/protobuf/timestamp.proto";
+option go_package="/pb";
+
+service StatusService{
+  rpc alive(google.protobuf.Timestamp) returns(response);
+}
+
+message response{
+
+}

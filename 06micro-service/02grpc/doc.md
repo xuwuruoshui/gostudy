@@ -2,7 +2,8 @@
 
 ## protobuf
 
-默认值
+### 默认值
+
 - string ""
 - double ""
 - float 0
@@ -12,6 +13,70 @@
 - uint64 0
 - bool 0
 - bytes([]uint8) nil
+
+### message
+
+尽量将message写出来来定义
+
+```protobuf
+syntax = "proto3";
+
+option go_package = "/pb";
+
+package pb;
+
+message TestRequest{
+  int64 id = 1;
+}
+
+message TestResponse{
+  string name = 1;
+  UserInfo userInfo = 2;
+}
+
+message UserInfo{
+  string name = 1;
+}
+```
+
+### 常用类型
+
+```protobuf
+syntax = "proto3";
+// 导入时间类型
+import "google/protobuf/timestamp.proto";
+
+option go_package = "/pb";
+
+// 枚举
+enum Week{
+  Sunday = 0;
+  Monday = 1;
+  Tuesday = 2;
+  Wednesday = 3;
+  Thursday = 4;
+  Friday = 5;
+  Saturday = 6;
+}
+
+message TodoRequest{
+  string todo = 1;
+  Week week = 2;
+  // map类型
+  map<string, string> bookMap = 3;
+  google.protobuf.Timestamp doneTime = 4;
+}
+
+message TodoResponse{
+  bool done = 1;
+}
+
+
+```
+
+## protobuf生成go
+
+1. 编写文件
 
 ```protobuf
 syntax = "proto3";
@@ -34,9 +99,7 @@ message BookResponse{
 }
 ```
 
-## 生产go
-
-1. 安装protoc
+2. 安装protoc
 
 ```shell
 # 下载
@@ -48,7 +111,7 @@ https://github.com/protocolbuffers/protobuf/releases
 - include
 ```
 
-2. 安装protoc-gen-go
+3. 安装protoc-gen-go
 
 ```shell
 # 文档
@@ -58,7 +121,7 @@ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
 go get -u google.golang.org/grpc
 ```
 
-3. 生产go文件
+4. 生成go文件
 
 ```shell
 # 文件目录
@@ -80,28 +143,30 @@ go mod tidy
 server
 
 ```go
+
+
 type BookInfo struct {
-pb.UnimplementedStudyServer
+	pb.UnimplementedStudyServer
 }
 
 func (b *BookInfo) Study(ct context.Context, req *pb.BookRequest) (*pb.BookResponse, error) {
-fmt.Println(req.Name)
-return &pb.BookResponse{Msg: "Server: Welcome to GRPC!!!"}, nil
+	fmt.Println(req.Name)
+	return &pb.BookResponse{Msg: "Server: Welcome to GRPC!!!"}, nil
 }
 
 func main() {
 
-// 1.创建服务
-server := grpc.NewServer()
-pb.RegisterStudyServer(server, &BookInfo{})
-listen, err := net.Listen("tcp", "0.0.0.0:9090")
-if err != nil {
-panic(err)
-}
-err = server.Serve(listen)
-if err != nil {
-panic(err)
-}
+	// 1.创建服务
+	server := grpc.NewServer()
+	pb.RegisterStudyServer(server, &BookInfo{})
+	listen, err := net.Listen("tcp", "0.0.0.0:9090")
+	if err != nil {
+		panic(err)
+	}
+	err = server.Serve(listen)
+	if err != nil {
+		panic(err)
+	}
 }
 
 ```
@@ -109,18 +174,20 @@ panic(err)
 client
 
 ```go
-func main() {
-conn, err := grpc.Dial("127.0.0.1:9090", grpc.WithInsecure())
-if err != nil {
-panic(err)
-}
 
-client := pb.NewStudyClient(conn)
-resp, err := client.Study(context.Background(), &pb.BookRequest{Name: "Client: I want to study go micro"})
-if err != nil {
-panic(err)
-}
-fmt.Println(resp.Msg)
+
+func main() {
+	conn, err := grpc.Dial("127.0.0.1:9090", grpc.WithInsecure())
+	if err != nil {
+		panic(err)
+	}
+
+	client := pb.NewStudyClient(conn)
+	resp, err := client.Study(context.Background(), &pb.BookRequest{Name: "Client: I want to study go micro"})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(resp.Msg)
 }
 
 ```
@@ -154,6 +221,7 @@ message FoodStreamResponse{
 server
 
 ```go
+
 
 func main() {
 	conn, err := grpc.Dial("localhost:9091", grpc.WithInsecure())
@@ -252,96 +320,187 @@ func ServerStream(err error, client pb.FoodServiceClient) {
 client
 
 ```go
+
+
 func main() {
-conn, err := grpc.Dial("localhost:9091", grpc.WithInsecure())
-if err != nil {
-panic(err)
-}
+	conn, err := grpc.Dial("localhost:9091", grpc.WithInsecure())
+	if err != nil {
+		panic(err)
+	}
 
-client := pb.NewFoodServiceClient(conn)
-// 1. 服务端流模式
-//ServerStream(err, client)
+	client := pb.NewFoodServiceClient(conn)
+	// 1. 服务端流模式
+	//ServerStream(err, client)
 
-// 2. 客户端流模式
-//ClientStream(err, client)
+	// 2. 客户端流模式
+	//ClientStream(err, client)
 
-// 3. 双向模式
-fullClient, err := client.FullStream(context.Background())
-if err != nil {
-panic(err)
-}
+	// 3. 双向模式
+	fullClient, err := client.FullStream(context.Background())
+	if err != nil {
+		panic(err)
+	}
 
-wg := FullStream(err, fullClient)
+	wg := FullStream(err, fullClient)
 
-wg.Wait()
+	wg.Wait()
 }
 
 func FullStream(err error, fullClient pb.FoodService_FullStreamClient) sync.WaitGroup {
-var wg sync.WaitGroup
-if err != nil {
-panic(err)
-}
-wg.Add(2)
-go func() {
-defer wg.Done()
-for {
-recv, err := fullClient.Recv()
-if err != nil {
-fmt.Println(err)
-break
-}
-fmt.Println(recv.Msg)
-}
-}()
+	var wg sync.WaitGroup
+	if err != nil {
+		panic(err)
+	}
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		for {
+			recv, err := fullClient.Recv()
+			if err != nil {
+				fmt.Println(err)
+				break
+			}
+			fmt.Println(recv.Msg)
+		}
+	}()
 
-go func () {
-defer wg.Done()
-foods := []string{"东坡肘子", "回锅肉", "叫花鸡", "伤心凉粉", "担担面"}
-for _, item := range foods {
-err := fullClient.Send(&pb.FoodStreamRequest{Name: item})
-if err != nil {
-fmt.Println(err)
-break
-}
-}
-}()
-return wg
+	go func() {
+		defer wg.Done()
+		foods := []string{"东坡肘子", "回锅肉", "叫花鸡", "伤心凉粉", "担担面"}
+		for _, item := range foods {
+			err := fullClient.Send(&pb.FoodStreamRequest{Name: item})
+			if err != nil {
+				fmt.Println(err)
+				break
+			}
+		}
+	}()
+	return wg
 }
 
 func ClientStream(err error, client pb.FoodServiceClient) {
-ctx, cancelFunc := context.WithTimeout(context.Background(), 3*time.Second)
-defer cancelFunc()
-clientPost, err := client.PostName(ctx)
-if err != nil {
-panic(err)
-}
+	ctx, cancelFunc := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancelFunc()
+	clientPost, err := client.PostName(ctx)
+	if err != nil {
+		panic(err)
+	}
 
-foods := []string{"东坡肘子", "回锅肉", "叫花鸡", "伤心凉粉", "担担面"}
+	foods := []string{"东坡肘子", "回锅肉", "叫花鸡", "伤心凉粉", "担担面"}
 
-for _, item := range foods {
-err = clientPost.Send(&pb.FoodStreamRequest{Name: item})
-time.Sleep(time.Second)
-if err != nil {
-fmt.Println(err)
-break
-}
-}
+	for _, item := range foods {
+		err = clientPost.Send(&pb.FoodStreamRequest{Name: item})
+		time.Sleep(time.Second)
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+	}
 }
 
 func ServerStream(err error, client pb.FoodServiceClient) {
-res, err := client.SayName(context.Background(), &pb.FoodStreamRequest{Name: "奥里给"})
-if err != nil {
-panic(err)
+	res, err := client.SayName(context.Background(), &pb.FoodStreamRequest{Name: "奥里给"})
+	if err != nil {
+		panic(err)
+	}
+
+	for {
+		recv, err := res.Recv()
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+		fmt.Println(recv.Msg)
+	}
 }
 
-for {
-recv, err := res.Recv()
-if err != nil {
-fmt.Println(err)
-break
+```
+
+# metadata
+相当于http中的header
+
+todo.proto
+```protobuf
+syntax="proto3";
+
+option go_package="/pb";
+
+service TodoService{
+  rpc DoWork(TodoRequest) returns(TodoResponse);
 }
-fmt.Println(recv.Msg)
+
+message TodoRequest{
+  string msg = 1;
 }
+
+message TodoResponse{
+  string resMsg = 1;
+}
+```
+
+server
+```go
+type Todo struct {
+	pb.UnimplementedTodoServiceServer
+}
+
+func(t *Todo) DoWork(ctx context.Context,req *pb.TodoRequest) (*pb.TodoResponse, error){
+
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok{
+		fmt.Println("metadata不存在")
+		return nil, nil
+	}
+	for k,v := range md {
+		fmt.Printf("%s:%s\n",k,v)
+	}
+
+	fmt.Println("服务端已接受到客户端消息: ",req.Msg)
+	return &pb.TodoResponse{ResMsg: "你要学习: go微服务,grpc"},nil
+}
+
+func main(){
+
+
+
+
+	server := grpc.NewServer()
+	pb.RegisterTodoServiceServer(server,&Todo{})
+
+	listen, err := net.Listen("tcp", ":9094")
+	if err!=nil{
+		panic(err)
+	}
+	err = server.Serve(listen)
+	if err!=nil{
+		panic(err)
+	}
+}
+
+```
+
+client
+```go
+func main(){
+	conn, err := grpc.Dial("127.0.0.1:9094",grpc.WithInsecure())
+	if err != nil {
+		panic(err)
+	}
+	client := pb.NewTodoServiceClient(conn)
+
+	// 必须是ascii码
+	//md1 := metadata.New(map[string]string{
+	//	"name": "metadata try",
+	//})
+	md1 := metadata.Pairs("name","microserver","key","value")
+
+	ctx := metadata.NewOutgoingContext(context.Background(), md1)
+	resp, err := client.DoWork(ctx, &pb.TodoRequest{Msg: "看一下要学什么"})
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(resp.ResMsg)
 }
 
 ```

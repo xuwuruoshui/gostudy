@@ -11,6 +11,9 @@ message TestRequest{
 message TestResponse{
   string name=1;
   UserInfo userInfo=2;
+  message otherInfo{
+    string otherMsg=1;
+  };
 }
 
 message UserInfo{

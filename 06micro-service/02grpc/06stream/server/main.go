@@ -1,7 +1,7 @@
 package main
 
 import (
-	"02grpc/03stream/proto/pb"
+	"02grpc/06stream/proto/pb"
 	"fmt"
 	"google.golang.org/grpc"
 	"net"

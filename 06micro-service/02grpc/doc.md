@@ -577,3 +577,109 @@ func main(){
 	fmt.Println(res.ResMsg)
 }
 ```
+# auth
+使用metadata+intercptor
+
+server
+```go
+type Todo struct {
+	pb.UnimplementedTodoServiceServer
+}
+
+func (t Todo) DoWork(ctx context.Context,req *pb.TodoRequest) (*pb.TodoResponse, error) {
+
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok{
+		return nil,status.Error(codes.Unauthenticated,"认证失败")
+	}
+	token,ok := md["token"]
+	if !ok{
+		return nil,status.Error(codes.Unauthenticated,"认证失败")
+	}
+	fmt.Println("token:",token)
+
+	msg := req.GetMsg()
+	fmt.Println(msg)
+	return &pb.TodoResponse{ResMsg: "hahaha"},nil
+}
+
+func MyInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error){
+	t1 := time.Now()
+	resp, err = handler(ctx, req)
+	take := time.Now().Sub(t1)
+	fmt.Printf("执行时间:%d",take.Milliseconds())
+	return
+}
+
+func main(){
+
+	interceptor := grpc.UnaryInterceptor(MyInterceptor)
+	server := grpc.NewServer(interceptor)
+
+	pb.RegisterTodoServiceServer(server,&Todo{})
+
+	listen, err := net.Listen("tcp", ":9096")
+	if err != nil {
+		panic(err)
+	}
+	err = server.Serve(listen)
+	if err != nil {
+		panic(err)
+	}
+
+}
+```
+
+client
+```go
+func MyInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error{
+	//  1.metadata设置token
+	md := metadata.New(map[string]string{"token": "pass"})
+	ctx = metadata.NewOutgoingContext(ctx, md)
+
+	t1 := time.Now()
+	err := invoker(ctx, method, req, reply, cc, opts...)
+	if err!=nil{
+		panic(err)
+	}
+	take := time.Since(t1)
+	fmt.Printf("客户端执行时间:%d\n",take.Milliseconds())
+	return err
+}
+
+type MyCredentials struct {
+
+}
+
+func (m *MyCredentials) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error){
+	return map[string]string{"token": "pass"},nil
+}
+
+// 这个应该是是否使用ssl、tls吧
+func(m *MyCredentials) RequireTransportSecurity() bool{
+	return false
+}
+
+func main(){
+
+	// 方法1 metadata+interceptor
+	//opt := grpc.WithUnaryInterceptor(MyInterceptor)
+
+	// 方法2 WithPerRPCCredentials
+	opt := grpc.WithPerRPCCredentials(&MyCredentials{})
+	conn, err := grpc.Dial("127.0.0.1:9096", grpc.WithInsecure(), opt)
+	if err!=nil{
+		panic(err)
+	}
+	defer conn.Close()
+
+
+
+	client := pb.NewTodoServiceClient(conn)
+	res, err := client.DoWork(context.Background(), &pb.TodoRequest{Msg: "I am so happy!!!"})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(res.ResMsg)
+}
+```

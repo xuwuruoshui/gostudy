@@ -1,0 +1,2 @@
+{"level":"info","ts":1663508510.2634826,"caller":"02file/main.go:19","msg":"test"}
+{"level":"error","ts":1663508510.2640274,"caller":"02file/main.go:20","msg":"err....","stacktrace":"main.main\n\tE:/workspace/myproject/gostudy/07tools/04zap/02file/main.go:20\nruntime.main\n\tC:/Program Files/Go/src/runtime/proc.go:250"}

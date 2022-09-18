@@ -17,11 +17,11 @@ var logger *zap.Logger
 var sugarLogger *zap.SugaredLogger
 
 func init() {
-	// 直接使用
+	// 1.直接使用
 	//logger, _ = zap.NewProduction()
 	//sugarLogger = logger.Sugar()
 
-	// 客制化
+	// 2.客制化
 	encode := func() zapcore.Encoder {
 		encoderConfig := zap.NewProductionEncoderConfig()
 		//转换时间格式、日志级别大写
@@ -57,7 +57,7 @@ func init() {
 }
 
 func main() {
-	defer logger.Sync()
+	defer sugarLogger.Sync()
 	simpleHttpGet("www.google.com")
 	simpleHttpGet("http://www.google.com")
 

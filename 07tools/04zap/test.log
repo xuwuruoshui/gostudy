@@ -1,6 +1,0 @@
-2022-02-15T20:57:10.063+0800	ERROR	04zap/main.go:49	Error fetching URL www.google.com : Error = Get "www.google.com": unsupported protocol scheme ""
-2022-02-15T20:57:10.603+0800	INFO	04zap/main.go:52	Success! statusCode = 200 OK for URL http://www.google.com
-2022-02-15T21:00:48.509+0800	ERROR	04zap/main.go:63	Error fetching URL www.google.com : Error = Get "www.google.com": unsupported protocol scheme ""
-2022-02-15T21:00:49.106+0800	INFO	04zap/main.go:66	Success! statusCode = 200 OK for URL http://www.google.com
-2022-02-15T21:02:10.636+0800	ERROR	04zap/main.go:67	Error fetching URL www.google.com : Error = Get "www.google.com": unsupported protocol scheme ""
-2022-02-15T21:02:11.159+0800	INFO	04zap/main.go:70	Success! statusCode = 200 OK for URL http://www.google.com

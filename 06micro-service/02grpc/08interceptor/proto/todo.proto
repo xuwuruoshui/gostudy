@@ -1,0 +1,15 @@
+syntax="proto3";
+
+option go_package="/pb";
+
+service TodoService{
+  rpc DoWork(TodoRequest) returns(TodoResponse);
+}
+
+message TodoRequest{
+  string msg = 1;
+}
+
+message TodoResponse{
+  string resMsg = 1;
+}

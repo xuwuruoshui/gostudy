@@ -49,10 +49,27 @@ func init(){
 
 
 func main(){
-	now := time.Now()
-	u1 := User{Name:"张三",Birthday: &now}
-	result := db.Create(&u1)
-	fmt.Println(u1.Id)
-	fmt.Println(result.Error)
-	fmt.Println(result.RowsAffected)
+	db.AutoMigrate(&User{})
+	//now := time.Now()
+	//u1 := User{Name:"张三",Birthday: &now}
+	//result := db.Create(&u1)
+	//fmt.Println(u1.Id)
+	//fmt.Println(result.Error)
+	//fmt.Println(result.RowsAffected)
+
+	// update可以更新空值
+	//db.Model(&User{Id: 1}).Update("Name","")
+
+	// updates无法更新空值
+	//db.Model(&User{Id: 1}).Updates(&User{Name: ""})
+
+	// updates更新指针类型可以更新
+	//str := ""
+	//db.Model(&User{Id: 1}).Updates(&User{Email: &str})
+	// map形式也行
+	db.Model(&User{Id: 1}).Updates(map[string]interface{}{
+		"Name":"",
+		"Email":"",
+	})
+
 }

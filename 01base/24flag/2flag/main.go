@@ -32,7 +32,7 @@ func main() {
 	fmt.Println("====================")
 	fmt.Println(name, age, married, delay)
 
-	// 运行 go run .\main.go -name zhangsan -age 12 -married=true -delay 3s aaaa bbbb
+	// 运行 go run .\some_test.go -name zhangsan -age 12 -married=true -delay 3s aaaa bbbb
 	// 返回命令行参数后的其他参数
 	fmt.Println(flag.Args())
 	// 返回命令行参数后的其他参数个数

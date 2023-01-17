@@ -9,7 +9,7 @@ import (
 * @creator: xuwuruoshui
 * @date: 2021-10-16 23:18:17
 * @content: 学生管理系统
-* @tip: 运行时需要一起运行,执行命令 `go run main.go manager.go student.go`
+* @tip: 运行时需要一起运行,执行命令 `go run some_test.go manager.go student.go`
  */
 
 func main() {

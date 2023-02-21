@@ -1,0 +1,16 @@
+package example
+
+import (
+	"fmt"
+	"log"
+	"time"
+)
+
+func Aop() {
+    // start
+	start := time.Now()
+
+    // end
+	end := time.Now()
+	log.Println(end.Sub(start).Milliseconds())
+}

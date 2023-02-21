@@ -1,0 +1,5 @@
+package example
+
+var XXX = map[int]string{
+}
+

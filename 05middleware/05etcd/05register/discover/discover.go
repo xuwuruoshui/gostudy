@@ -3,7 +3,7 @@ package discover
 import (
 	"context"
 	"go.etcd.io/etcd/api/v3/mvccpb"
-	clientv3 "go.etcd.io/etcd/client/v3"
+	clientv3 "go.etcd.io/etcd/hello/v3"
 	"log"
 	"sync"
 	"time"
@@ -11,7 +11,7 @@ import (
 
 //ServiceDiscovery 服务发现
 type ServiceDiscovery struct {
-	cli        *clientv3.Client  //etcd client
+	cli        *clientv3.Client  //etcd hello
 	serverList map[string]string //服务列表
 	lock       sync.Mutex
 }

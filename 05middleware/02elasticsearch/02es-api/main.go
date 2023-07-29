@@ -29,7 +29,7 @@ func init() {
 
 	es, err := elasticsearch.NewClient(config)
 	if err != nil {
-		log.Fatalf("Error creating the client: %s", err)
+		log.Fatalf("Error creating the hello: %s", err)
 	}
 
 	_, err = es.Info()

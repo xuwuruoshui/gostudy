@@ -100,7 +100,7 @@ c.TplName = "index.html"
 ## ORM
 ### 连接数据库
 ```shell
-go get -u github.com/beego/beego/v2/client/orm
+go get -u github.com/beego/beego/v2/hello/orm
 go get -u github.com/go-sql-driver/mysql
 ```
 ```config

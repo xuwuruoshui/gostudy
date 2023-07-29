@@ -2,14 +2,14 @@ package register
 
 import (
 	"context"
-	clientv3 "go.etcd.io/etcd/client/v3"
+	clientv3 "go.etcd.io/etcd/hello/v3"
 	"log"
 	"time"
 )
 
 //ServiceRegister 创建租约注册服务
 type ServiceRegister struct {
-	cli     *clientv3.Client //etcd client
+	cli     *clientv3.Client //etcd hello
 	leaseID clientv3.LeaseID //租约ID
 	//租约keepalieve相应chan
 	keepAliveChan <-chan *clientv3.LeaseKeepAliveResponse

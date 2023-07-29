@@ -17,10 +17,10 @@ func main(){
 
 	client := pb.NewFoodServiceClient(conn)
 	// 1. 服务端流模式
-	//ServerStream(err, client)
+	//ServerStream(err, hello)
 
 	// 2. 客户端流模式
-	//ClientStream(err, client)
+	//ClientStream(err, hello)
 
 	// 3. 双向模式
 	fullClient, err := client.FullStream(context.Background())

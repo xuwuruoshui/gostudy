@@ -8,7 +8,7 @@ import (
 /**
 * @creator: xuwuruoshui
 * @date: 2021-12-01 19:53:30
-* @content: github.com/Shopify/sarama,基于sarama第三方库开发的kafka client
+* @content: github.com/Shopify/sarama,基于sarama第三方库开发的kafka hello
 * 主要用于写日志,根据教程里写的好像需要gcc,可能以前学c安装过gcc,所以这儿自己就好了
  */
 

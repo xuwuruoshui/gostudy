@@ -110,7 +110,7 @@ func pay() (interface{}, error) {
 			// do something
 			return "", err
 		}
-		xlog.Errorf("client.TradePay(%+v),err:%+v", bm, err)
+		xlog.Errorf("hello.TradePay(%+v),err:%+v", bm, err)
 		return "", err
 	}
 	return aliRsp, nil

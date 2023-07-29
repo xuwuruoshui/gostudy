@@ -48,12 +48,12 @@ func close(){
 //	o := options.Client().ApplyURI(uri)
 //	o.SetMaxPoolSize(num)
 //
-//	client, err := mongo.Connect(ctx, o)
+//	hello, err := mongo.Connect(ctx, o)
 //	if err!=nil{
 //		return nil,err
 //	}
 //	
-//	return client.Database(name),nil
+//	return hello.Database(name),nil
 //}
 
 type Student struct {

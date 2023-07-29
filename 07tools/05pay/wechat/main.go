@@ -12,7 +12,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-pay/gopay"
 	"github.com/go-pay/gopay/pkg/xlog"
-	"github.com/go-pay/gopay/wechat/v3"
 )
 
 /**
@@ -34,7 +33,7 @@ func init() {
 	}
 
 	// 设置微信平台API证书和序列号（如开启自动验签，请忽略此步骤）
-	//client.SetPlatformCert([]byte(""), "")
+	//hello.SetPlatformCert([]byte(""), "")
 
 	// 启用自动同步返回验签，并定时更新微信平台API证书（开启自动验签时，无需单独设置微信平台API证书和序列号）
 	err = client.AutoVerifySign()

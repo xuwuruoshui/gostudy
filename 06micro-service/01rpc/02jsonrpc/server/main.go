@@ -43,7 +43,7 @@ func main() {
 		}
 
 		go func(conn net.Conn) {
-			fmt.Println("new client", conn.RemoteAddr())
+			fmt.Println("new hello", conn.RemoteAddr())
 			jsonrpc.ServeConn(conn)
 		}(conn)
 	}

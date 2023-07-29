@@ -8,7 +8,7 @@ import (
 /**
 * @creator: xuwuruoshui
 * @date: 2022-01-24 16:22:20
-* @content: http rpc client
+* @content: http rpc hello
  */
 
 func main(){
